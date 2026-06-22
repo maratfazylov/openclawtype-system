@@ -1,0 +1,8 @@
+{
+  "name": "openclaw-deepagents-prototype",
+  "runtime": {
+    "model": {
+      "model_id": "openai:gpt-5.3-codex"
+    }
+  }
+}

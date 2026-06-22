@@ -1,0 +1,8 @@
+{
+  "dependencies": ["."],
+  "graphs": {
+    "openclaw": "./agent.py:agent",
+    "openclaw_swe": "./agent.py:swe_agent"
+  },
+  "env": ".env"
+}
