@@ -33,3 +33,11 @@ def test_telegram_connector_dry_run_does_not_require_credentials() -> None:
 
     assert '"dry_run": true' in result
     assert "OpenClaw connectors are working." in result
+
+
+def test_manim_presentation_targets_3b1b_manim_gl() -> None:
+    source = Path("presentation/openclawtype_manim.py").read_text()
+
+    assert "from manimlib import *" in source
+    assert "class ArchitectureScene" in source
+    assert "class TelegramConnectorScene" in source

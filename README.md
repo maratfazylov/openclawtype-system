@@ -12,6 +12,7 @@ This repo is intentionally small:
   - `openclaw_swe`: stricter SWE flow for issue localization, patching, and tests
 - `langgraph.json` exposes both assistants to `langgraph dev`
 - `connectors/` shows how external systems become agent tools
+- `presentation/` contains a ManimGL workshop deck
 - `AGENTS.md` and `skills/` provide durable working instructions
 - `agent.json` is a starting point for later `deepagents deploy` experiments
 
@@ -77,6 +78,20 @@ TELEGRAM_CHAT_ID=...
 ```
 
 Then ask the agent to call `send_telegram_message` with `dry_run=false`.
+
+## ManimGL Presentation
+
+The workshop deck lives in `presentation/openclawtype_manim.py` and targets the
+original 3Blue1Brown ManimGL project (`pip install manimgl`, import
+`manimlib`).
+
+Render one scene:
+
+```bash
+manimgl presentation/openclawtype_manim.py ArchitectureScene -w
+```
+
+See `presentation/README.md` for all scene names.
 
 ## Shell Mode
 
