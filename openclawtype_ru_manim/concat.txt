@@ -1,0 +1,5 @@
+file 'media/videos/script/480p15/Scene1_Intro.mp4'
+file 'media/videos/script/480p15/Scene2_Architecture.mp4'
+file 'media/videos/script/480p15/Scene3_Connector.mp4'
+file 'media/videos/script/480p15/Scene4_Telegram.mp4'
+file 'media/videos/script/480p15/Scene5_WorkshopFlow.mp4'

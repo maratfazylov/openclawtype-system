@@ -93,6 +93,24 @@ manimgl presentation/openclawtype_manim.py ArchitectureScene -w
 
 See `presentation/README.md` for all scene names.
 
+## Russian ManimCE Presentation
+
+The Russian workshop presentation built with `Yusuke710/manim-skill` lives in
+`openclawtype_ru_manim/`.
+
+- `plan.md` contains the narrative plan
+- `script.py` contains Manim Community Edition scenes
+- `concat.txt` defines the final scene order
+- `final.mp4` is the rendered presentation
+- `thumbnail.png` is a quick preview frame
+
+Render from that folder:
+
+```bash
+manim -ql script.py Scene1_Intro Scene2_Architecture Scene3_Connector Scene4_Telegram Scene5_WorkshopFlow
+ffmpeg -y -f concat -safe 0 -i concat.txt -c copy final.mp4
+```
+
 ## Shell Mode
 
 By default, the agent does not get local shell execution. To experiment with a
