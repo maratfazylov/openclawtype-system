@@ -67,6 +67,12 @@ def arrow_between(left, right, color=CYAN):
     return arrow
 
 
+def fit_to_frame(mob, max_width=13.1):
+    if mob.get_width() > max_width:
+        mob.set_width(max_width)
+    return mob
+
+
 class DeckScene(Scene):
     def setup(self):
         self.camera.background_color = BG
@@ -107,7 +113,8 @@ class ArchitectureScene(DeckScene):
         graph = panel("LangGraph", ["threads", "runs", "state"], BLUE, width=3.5)
         agent = panel("OpenClawtype", ["skills", "subagents", "tools"], GREEN, width=3.7)
 
-        row = VGroup(user, ui, graph, agent).arrange(RIGHT, buff=0.55)
+        row = VGroup(user, ui, graph, agent).arrange(RIGHT, buff=0.42)
+        fit_to_frame(row)
         row.shift(0.25 * DOWN)
         arrows = VGroup(
             arrow_between(user, ui, PURPLE),
@@ -164,7 +171,9 @@ class ConnectorStepScene(DeckScene):
             width=4.2,
             height=2.7,
         )
-        row = VGroup(code, agent, behavior).arrange(RIGHT, buff=0.6).shift(0.1 * DOWN)
+        row = VGroup(code, agent, behavior).arrange(RIGHT, buff=0.5)
+        fit_to_frame(row)
+        row.shift(0.1 * DOWN)
         arrows = VGroup(arrow_between(code, agent, YELLOW), arrow_between(agent, behavior, GREEN))
 
         self.play(FadeIn(code, LEFT))
@@ -214,7 +223,8 @@ class TelegramConnectorScene(DeckScene):
             CYAN,
             width=4.55,
         )
-        row = VGroup(dry, tools, real).arrange(RIGHT, buff=0.55)
+        row = VGroup(dry, tools, real).arrange(RIGHT, buff=0.45)
+        fit_to_frame(row)
         self.play(LaggedStartMap(FadeIn, row, shift=UP, lag_ratio=0.12))
         self.play(ShowCreation(arrow_between(dry, tools, GREEN)))
         self.play(ShowCreation(arrow_between(tools, real, CYAN)))
@@ -257,4 +267,3 @@ class WorkshopFlowScene(DeckScene):
         closing.next_to(box, DOWN, buff=0.6)
         self.play(Write(closing))
         self.wait(1.4)
-

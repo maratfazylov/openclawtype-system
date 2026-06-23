@@ -4,3 +4,4 @@
 .langgraph_api/
 __pycache__/
 *.pyc
+videos/
