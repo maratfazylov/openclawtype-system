@@ -2,7 +2,9 @@
   "dependencies": ["."],
   "graphs": {
     "openclaw": "./agent.py:agent",
-    "openclaw_swe": "./agent.py:swe_agent"
+    "openclaw_swe": "./agent.py:swe_agent",
+    "openclaw_steps": "./agent_workshop_steps.py:agent",
+    "openclaw_steps_swe": "./agent_workshop_steps.py:swe_agent"
   },
   "env": ".env"
 }

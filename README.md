@@ -10,6 +10,8 @@ This repo is intentionally small:
 - `agent.py` defines two LangGraph assistants:
   - `openclaw`: general coding/research agent
   - `openclaw_swe`: stricter SWE flow for issue localization, patching, and tests
+- `agent_workshop_steps.py` contains the same agent split into uncommentable
+  workshop steps
 - `langgraph.json` exposes both assistants to `langgraph dev`
 - `connectors/` shows how external systems become agent tools
 - `presentation/` contains a ManimGL workshop deck
@@ -37,6 +39,59 @@ In the UI use:
 
 - Deployment URL: `http://127.0.0.1:2024`
 - Assistant ID: `openclaw` or `openclaw_swe`
+
+## Workshop Step-by-Step Agent
+
+Use `agent_workshop_steps.py` when you want to build the agent live during the
+workshop instead of showing the final `agent.py` immediately.
+
+The top of the file has uncommentable step lines:
+
+```python
+# WORKSHOP_STEP = 1  # Minimal chat/coding agent, no custom tools.
+# WORKSHOP_STEP = 2  # Add workspace-scoped filesystem backend.
+# WORKSHOP_STEP = 3  # Add demo issue-tracker connector.
+# WORKSHOP_STEP = 4  # Add Telegram connector in safe dry-run mode.
+# WORKSHOP_STEP = 5  # Add subagents, skills, and durable memory.
+WORKSHOP_STEP = 6  # Final version: also expose stricter SWE mode.
+```
+
+For a live walkthrough:
+
+1. Uncomment `WORKSHOP_STEP = 1`, restart `uv run langgraph dev`, and use
+   assistant `openclaw_steps`.
+2. Move to Step 2 to show workspace file access with safe filesystem tools.
+3. Move to Step 3 to add the local issue-tracker connector.
+4. Move to Step 4 to add Telegram as an external connector.
+5. Move to Step 5 to add subagents, skills, and memory.
+6. Move to Step 6 and switch to `openclaw_steps_swe` for the stricter SWE flow.
+
+You can also switch steps without editing the file:
+
+```bash
+OPENCLAW_WORKSHOP_STEP=3 uv run langgraph dev
+```
+
+Suggested prompts:
+
+```text
+Step 2: Inspect the workspace files and summarize what this project does.
+```
+
+```text
+Step 3: Use the demo issue connector. List issues, fetch DEMO-101, and propose
+the next implementation step.
+```
+
+```text
+Step 4: Use the Telegram connector in dry-run mode. Prepare a short workshop
+message that says OpenClaw connectors are working.
+```
+
+```text
+Step 6: In SWE mode, inspect the project shape test and explain what behavior
+it protects.
+```
 
 ## Workshop Step: Add a Connector
 

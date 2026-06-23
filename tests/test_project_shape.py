@@ -9,6 +9,8 @@ def test_langgraph_config_exposes_expected_assistants() -> None:
 
     assert '"openclaw"' in config
     assert '"openclaw_swe"' in config
+    assert '"openclaw_steps"' in config
+    assert '"openclaw_steps_swe"' in config
 
 
 def test_agent_file_keeps_local_shell_opt_in() -> None:
@@ -16,6 +18,15 @@ def test_agent_file_keeps_local_shell_opt_in() -> None:
 
     assert "OPENCLAW_ENABLE_LOCAL_SHELL" in agent_source
     assert '!= "1"' in agent_source
+
+
+def test_workshop_agent_is_split_into_uncommentable_steps() -> None:
+    source = Path("agent_workshop_steps.py").read_text()
+
+    assert "# WORKSHOP_STEP = 1" in source
+    assert "WORKSHOP_STEP = 6" in source
+    assert "OPENCLAW_WORKSHOP_STEP" in source
+    assert "OPENCLAW_ENABLE_LOCAL_SHELL" in source
 
 
 def test_demo_connector_exposes_issue_data() -> None:
