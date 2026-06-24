@@ -100,7 +100,7 @@ The same step-by-step flow also exists as Jupyter notebooks in
 `workshop_notebooks/`.
 
 ```bash
-uv run --with jupyter jupyter lab workshop_notebooks
+uv run jupyter lab workshop_notebooks
 ```
 
 Use them when the workshop format is more notebook-driven than UI-driven:

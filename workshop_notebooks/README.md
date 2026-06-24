@@ -15,7 +15,7 @@ Run from the repository root so imports like `connectors.demo` resolve correctly
 
 ```bash
 uv sync
-uv run --with jupyter jupyter lab workshop_notebooks
+uv run jupyter lab workshop_notebooks
 ```
 
 The notebooks are kept without outputs so diffs stay readable.
