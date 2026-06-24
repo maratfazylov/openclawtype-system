@@ -99,6 +99,20 @@ it protects.
 The same step-by-step flow also exists as Jupyter notebooks in
 `workshop_notebooks/`.
 
+For external notebook apps, open any `.ipynb` and select the kernel:
+
+```text
+OpenClaw Workshop (.venv)
+```
+
+If the kernel is not visible yet, register it once:
+
+```bash
+.venv/bin/python -m ipykernel install --user --name openclaw-workshop --display-name "OpenClaw Workshop (.venv)"
+```
+
+CLI fallback:
+
 ```bash
 uv run jupyter lab workshop_notebooks
 ```

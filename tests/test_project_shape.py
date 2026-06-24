@@ -48,6 +48,8 @@ def test_workshop_notebooks_are_present_and_clean() -> None:
     for notebook_path in notebook_dir.glob("*.ipynb"):
         notebook = json.loads(notebook_path.read_text())
         assert notebook["nbformat"] == 4
+        assert notebook["metadata"]["kernelspec"]["name"] == "openclaw-workshop"
+        assert notebook["metadata"]["kernelspec"]["display_name"] == "OpenClaw Workshop (.venv)"
         for cell in notebook["cells"]:
             if cell["cell_type"] == "code":
                 assert cell["outputs"] == []

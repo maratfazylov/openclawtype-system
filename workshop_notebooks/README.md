@@ -11,7 +11,25 @@ Suggested order:
 5. `05_subagents_skills_memory.ipynb` — subagents, local skills, memory.
 6. `06_swe_mode.ipynb` — stricter SWE graph with write/edit interrupts.
 
-Run from the repository root so imports like `connectors.demo` resolve correctly.
+Open any `.ipynb` in VS Code, PyCharm, JupyterLab, or another notebook app and
+select this kernel:
+
+```text
+OpenClaw Workshop (.venv)
+```
+
+The kernel points at the local `.venv`, so notebooks can be run interactively
+without starting them through `uv`. Each notebook also bootstraps the repository
+root onto `sys.path`, so imports like `connectors.demo` work when the notebook is
+opened directly from this folder.
+
+If the kernel is missing, register it once from the repository root:
+
+```bash
+.venv/bin/python -m ipykernel install --user --name openclaw-workshop --display-name "OpenClaw Workshop (.venv)"
+```
+
+CLI fallback:
 
 ```bash
 uv sync
