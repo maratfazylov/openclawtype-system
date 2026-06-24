@@ -12,6 +12,7 @@ This repo is intentionally small:
   - `openclaw_swe`: stricter SWE flow for issue localization, patching, and tests
 - `agent_workshop_steps.py` contains the same agent split into uncommentable
   workshop steps
+- `workshop_notebooks/` contains the same flow as runnable Jupyter notebooks
 - `langgraph.json` exposes both assistants to `langgraph dev`
 - `connectors/` shows how external systems become agent tools
 - `presentation/` contains a ManimGL workshop deck
@@ -92,6 +93,24 @@ message that says OpenClaw connectors are working.
 Step 6: In SWE mode, inspect the project shape test and explain what behavior
 it protects.
 ```
+
+## Workshop Notebooks
+
+The same step-by-step flow also exists as Jupyter notebooks in
+`workshop_notebooks/`.
+
+```bash
+uv run --with jupyter jupyter lab workshop_notebooks
+```
+
+Use them when the workshop format is more notebook-driven than UI-driven:
+
+- `01_minimal_agent.ipynb`
+- `02_filesystem_backend.ipynb`
+- `03_demo_connector.ipynb`
+- `04_telegram_connector.ipynb`
+- `05_subagents_skills_memory.ipynb`
+- `06_swe_mode.ipynb`
 
 ## Workshop Step: Add a Connector
 

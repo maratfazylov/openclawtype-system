@@ -1,3 +1,4 @@
+import json
 from pathlib import Path
 
 from connectors.demo import get_demo_issue, list_demo_issues
@@ -27,6 +28,30 @@ def test_workshop_agent_is_split_into_uncommentable_steps() -> None:
     assert "WORKSHOP_STEP = 6" in source
     assert "OPENCLAW_WORKSHOP_STEP" in source
     assert "OPENCLAW_ENABLE_LOCAL_SHELL" in source
+
+
+def test_workshop_notebooks_are_present_and_clean() -> None:
+    expected = [
+        "01_minimal_agent.ipynb",
+        "02_filesystem_backend.ipynb",
+        "03_demo_connector.ipynb",
+        "04_telegram_connector.ipynb",
+        "05_subagents_skills_memory.ipynb",
+        "06_swe_mode.ipynb",
+    ]
+
+    notebook_dir = Path("workshop_notebooks")
+    actual = sorted(path.name for path in notebook_dir.glob("*.ipynb"))
+
+    assert actual == expected
+
+    for notebook_path in notebook_dir.glob("*.ipynb"):
+        notebook = json.loads(notebook_path.read_text())
+        assert notebook["nbformat"] == 4
+        for cell in notebook["cells"]:
+            if cell["cell_type"] == "code":
+                assert cell["outputs"] == []
+                assert cell["execution_count"] is None
 
 
 def test_demo_connector_exposes_issue_data() -> None:
