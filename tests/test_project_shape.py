@@ -50,8 +50,8 @@ def test_workshop_notebooks_are_present_and_valid() -> None:
     for notebook_path in notebook_dir.glob("*.ipynb"):
         notebook = json.loads(notebook_path.read_text())
         assert notebook["nbformat"] == 4
-        assert notebook["metadata"]["kernelspec"]["name"] == "openclaw-workshop"
-        assert notebook["metadata"]["kernelspec"]["display_name"] == "OpenClaw Workshop (.venv)"
+        assert notebook["metadata"]["kernelspec"]["name"] == "python3"
+        assert notebook["metadata"]["kernelspec"]["display_name"] == "Python 3 (.venv)"
         assert "sk-or-" not in notebook_path.read_text()
         for index, cell in enumerate(notebook["cells"], start=1):
             if cell["cell_type"] == "code":

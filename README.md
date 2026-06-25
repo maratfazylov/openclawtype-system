@@ -99,16 +99,17 @@ it protects.
 The same step-by-step flow also exists as Jupyter notebooks in
 `workshop_notebooks/`.
 
-For external notebook apps, open any `.ipynb` and select the kernel:
+For external notebook apps, open any `.ipynb` and select the project virtual
+environment:
 
 ```text
-OpenClaw Workshop (.venv)
+Python 3 (.venv)
 ```
 
-If the kernel is not visible yet, register it once:
+If the app asks for an interpreter path, choose:
 
-```bash
-.venv/bin/python -m ipykernel install --user --name openclaw-workshop --display-name "OpenClaw Workshop (.venv)"
+```text
+/Users/ken/work/openclaw clone/.venv/bin/python
 ```
 
 CLI fallback:

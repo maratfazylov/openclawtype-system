@@ -13,21 +13,25 @@ Suggested order:
 6. `06_swe_mode.ipynb` — stricter SWE graph with write/edit interrupts.
 
 Open any `.ipynb` in VS Code, PyCharm, JupyterLab, or another notebook app and
-select this kernel:
+select the project virtual environment:
 
 ```text
-OpenClaw Workshop (.venv)
+Python 3 (.venv)
 ```
 
-The kernel points at the local `.venv`, so notebooks can be run interactively
-without starting them through `uv`. Each notebook also bootstraps the repository
-root onto `sys.path`, so imports like `connectors.demo` work when the notebook is
-opened directly from this folder.
+If the app asks for an interpreter path, choose:
+
+```text
+/Users/ken/work/openclaw clone/.venv/bin/python
+```
+
+Each notebook bootstraps the repository root onto `sys.path`, so imports like
+`connectors.demo` work when the notebook is opened directly from this folder.
 
 If the kernel is missing, register it once from the repository root:
 
 ```bash
-.venv/bin/python -m ipykernel install --user --name openclaw-workshop --display-name "OpenClaw Workshop (.venv)"
+.venv/bin/python -m ipykernel install --prefix .venv --name python3 --display-name "Python 3 (.venv)"
 ```
 
 CLI fallback:
