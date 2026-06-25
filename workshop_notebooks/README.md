@@ -4,6 +4,7 @@ These notebooks mirror `agent_workshop_steps.py`, but each layer is isolated in 
 
 Suggested order:
 
+0. `00_full_interactive_workshop.ipynb` — one combined notebook with real OpenRouter calls and saved outputs.
 1. `01_minimal_agent.ipynb` — model + prompt + `create_deep_agent`.
 2. `02_filesystem_backend.ipynb` — workspace-scoped backend and shell opt-in.
 3. `03_demo_connector.ipynb` — keyless demo issue connector.
@@ -36,4 +37,6 @@ uv sync
 uv run jupyter lab workshop_notebooks
 ```
 
-The notebooks are kept without outputs so diffs stay readable.
+`00_full_interactive_workshop.ipynb` intentionally contains saved outputs from
+real OpenRouter calls. The other notebooks are smaller chapter-by-chapter
+variants for live editing.

@@ -1,3 +1,4 @@
+import ast
 import json
 from pathlib import Path
 
@@ -30,8 +31,9 @@ def test_workshop_agent_is_split_into_uncommentable_steps() -> None:
     assert "OPENCLAW_ENABLE_LOCAL_SHELL" in source
 
 
-def test_workshop_notebooks_are_present_and_clean() -> None:
+def test_workshop_notebooks_are_present_and_valid() -> None:
     expected = [
+        "00_full_interactive_workshop.ipynb",
         "01_minimal_agent.ipynb",
         "02_filesystem_backend.ipynb",
         "03_demo_connector.ipynb",
@@ -50,10 +52,10 @@ def test_workshop_notebooks_are_present_and_clean() -> None:
         assert notebook["nbformat"] == 4
         assert notebook["metadata"]["kernelspec"]["name"] == "openclaw-workshop"
         assert notebook["metadata"]["kernelspec"]["display_name"] == "OpenClaw Workshop (.venv)"
-        for cell in notebook["cells"]:
+        assert "sk-or-" not in notebook_path.read_text()
+        for index, cell in enumerate(notebook["cells"], start=1):
             if cell["cell_type"] == "code":
-                assert cell["outputs"] == []
-                assert cell["execution_count"] is None
+                ast.parse("".join(cell["source"]), filename=f"{notebook_path}:cell-{index}")
 
 
 def test_demo_connector_exposes_issue_data() -> None:

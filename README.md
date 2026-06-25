@@ -119,6 +119,7 @@ uv run jupyter lab workshop_notebooks
 
 Use them when the workshop format is more notebook-driven than UI-driven:
 
+- `00_full_interactive_workshop.ipynb`
 - `01_minimal_agent.ipynb`
 - `02_filesystem_backend.ipynb`
 - `03_demo_connector.ipynb`
