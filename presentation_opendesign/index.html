@@ -1,0 +1,985 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Deep Agents Workshop — СберХаб Петербург</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Lora:wght@600;700&display=swap" rel="stylesheet" />
+  <style>
+    /* ===========================================================
+       Deck framework — DO NOT EDIT the rules in this <style> block.
+       Edit only inside the second <style> block below (per-deck
+       styles) and inside <section class="slide"> bodies.
+
+       Contract this framework provides:
+         - 1920×1080 fixed canvas, scaled to fit the viewport
+         - Only .slide.active is visible at a time
+         - Prev/next + counter rendered outside the scaled stage
+         - Keyboard (← → space PgUp PgDn Home End), click, and stored
+           position survive iframe focus quirks
+         - "Save as PDF" produces a multi-page vertical PDF, one slide
+           per page, by toggling every slide visible under @media print
+       =========================================================== */
+    :root {
+      /* SLOT: theme tokens — the only top-level CSS the agent edits.
+         Add or override --bg / --fg / --accent / etc. here. */
+      --bg: #f7f1e7;
+      --fg: #201d19;
+      --muted: #6e655b;
+      --accent: #c04a1a;
+      --surface: #fffaf1;
+      --shell: #08090d;
+      --night: #15130f;
+      --night-ink: #f7f1e7;
+      --hairline: rgba(32, 29, 25, 0.18);
+      --hairline-dark: rgba(247, 241, 231, 0.22);
+      --serif: "Lora", "Iowan Old Style", Georgia, serif;
+      --serif-en: "Lora", "Iowan Old Style", Georgia, serif;
+      --sans: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+      --mono: "JetBrains Mono", "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: var(--shell);
+      color: var(--fg);
+      font: 18px/1.5 -apple-system, system-ui, sans-serif;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+    .deck-shell {
+      position: fixed;
+      inset: 0;
+      overflow: hidden;
+    }
+    .deck-stage {
+      width: 1920px;
+      height: 1080px;
+      background: var(--bg);
+      position: relative;
+      transform-origin: top left;
+      box-shadow: 0 30px 80px rgba(0, 0, 0, 0.35);
+    }
+    .slide {
+      position: absolute;
+      inset: 0;
+      overflow: hidden;
+    }
+    /* Visibility toggle hardened with :not(.active) + !important so cascade
+       order can't break it. The previous `.slide { display:none }` rule
+       lost the cascade whenever a per-slide variant class (e.g.
+       `.s-cold { display:grid }`) was declared after it on the same
+       element — every slide silently became visible at once. The
+       `!important` is a belt-and-suspenders against agent code that adds
+       `!important` on variant classes too. */
+    .slide:not(.active) { display: none !important; }
+    /* The active default uses :where() so it has zero specificity. Per-slide
+       variant classes like `.s-cold { display:grid }` or
+       `.s-magazine { display:block }` can override the default flex layout
+       just by declaring `display` — no need for the variant to be more
+       specific. The hide rule above still wins for inactive slides. */
+    :where(.slide.active) { display: flex; flex-direction: column; }
+
+    /* Chrome — counter + prev/next live outside the scaled stage so they
+       don't shrink with it. Do not relocate them inside .deck-stage. */
+    .deck-counter {
+      position: fixed;
+      bottom: 22px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      background: rgba(10, 14, 26, 0.92);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      padding: 6px;
+      border-radius: 999px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      color: #fff;
+      font: 12px/1 ui-monospace, SFMono-Regular, Menlo, monospace;
+      letter-spacing: 0.18em;
+      z-index: 1000;
+    }
+    .deck-counter button {
+      width: 36px; height: 36px;
+      background: transparent;
+      color: #fff;
+      border: 0;
+      border-radius: 50%;
+      font-size: 18px;
+      line-height: 1;
+      cursor: pointer;
+      display: grid;
+      place-items: center;
+      transition: background 0.15s;
+    }
+    .deck-counter button:hover { background: rgba(255, 255, 255, 0.12); }
+    .deck-counter button[disabled] { opacity: 0.3; cursor: default; }
+    .deck-counter .deck-count {
+      padding: 0 14px;
+      letter-spacing: 0.22em;
+    }
+    .deck-counter .deck-count .total { color: rgba(255, 255, 255, 0.5); }
+    .deck-hint {
+      position: fixed;
+      bottom: 26px;
+      right: 28px;
+      color: rgba(255, 255, 255, 0.4);
+      font: 11px/1 ui-monospace, SFMono-Regular, Menlo, monospace;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      z-index: 999;
+      pointer-events: none;
+    }
+
+    /* Print / PDF stitching — every slide stacks top-to-bottom, one per
+       page. The viewer's "Share → PDF" relies on this; do not remove. */
+    @media print {
+      @page { size: 1920px 1080px; margin: 0; }
+      html, body {
+        width: 1920px !important;
+        height: auto !important;
+        overflow: visible !important;
+        background: #fff !important;
+      }
+      .deck-shell {
+        position: static !important;
+        display: block !important;
+        inset: auto !important;
+      }
+      .deck-stage {
+        width: 1920px !important;
+        height: auto !important;
+        transform: none !important;
+        box-shadow: none !important;
+        position: static !important;
+      }
+      .slide {
+        display: flex !important;
+        position: relative !important;
+        inset: auto !important;
+        width: 1920px !important;
+        height: 1080px !important;
+        page-break-after: always;
+        break-after: page;
+      }
+      .slide:last-child { page-break-after: auto; break-after: auto; }
+      .deck-counter, .deck-hint { display: none !important; }
+    }
+  </style>
+  <style>
+    /* SLOT: per-deck styles — typography, layout helpers, slide variants.
+       Add classes used by the slide content below, e.g. .title, .big-stat,
+       .grid-3. Do not redefine .deck-shell / .deck-stage / .slide /
+       .deck-counter / .deck-hint or anything inside @media print. */
+    .s-cover,
+    .s-content,
+    .s-data,
+    .s-quote,
+    .s-two,
+    .s-divider,
+    .s-closing {
+      display: grid;
+      padding: 70px 86px 78px;
+      background: var(--bg);
+      color: var(--fg);
+      font-family: var(--sans);
+    }
+    .s-divider,
+    .s-content.dark,
+    .s-data.dark,
+    .s-closing {
+      background: var(--night);
+      color: var(--night-ink);
+    }
+    .masthead,
+    .footer {
+      position: absolute;
+      left: 86px;
+      right: 86px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-family: var(--sans);
+      font-weight: 600;
+      font-size: 18px;
+      line-height: 1;
+      letter-spacing: 0;
+      text-transform: none;
+      color: var(--muted);
+      border-color: var(--hairline);
+    }
+    .masthead {
+      top: 54px;
+      padding-bottom: 18px;
+      border-bottom: 1px solid;
+    }
+    .footer {
+      bottom: 54px;
+      padding-top: 18px;
+      border-top: 1px solid;
+    }
+    .dark .masthead,
+    .dark .footer,
+    .s-divider .masthead,
+    .s-divider .footer,
+    .s-closing .masthead,
+    .s-closing .footer {
+      color: rgba(247, 241, 231, 0.58);
+      border-color: var(--hairline-dark);
+    }
+    .kicker {
+      display: flex;
+      align-items: center;
+      gap: 18px;
+      margin-bottom: 24px;
+      font-family: var(--sans);
+      font-weight: 700;
+      font-size: 20px;
+      letter-spacing: 0;
+      text-transform: none;
+      color: var(--accent);
+    }
+    .kicker::before {
+      content: "";
+      width: 44px;
+      height: 4px;
+      background: var(--accent);
+      display: inline-block;
+    }
+    .hl { color: var(--accent); }
+    h1,
+    h2 {
+      font-family: var(--serif);
+      font-weight: 700;
+      line-height: 1.02;
+      letter-spacing: 0;
+      text-wrap: balance;
+    }
+    h1 { font-size: 128px; max-width: 1260px; }
+    h2 { font-size: 82px; max-width: 1220px; }
+    .cover-grid {
+      align-self: center;
+      display: grid;
+      grid-template-columns: 1fr 470px;
+      gap: 80px;
+      align-items: end;
+      padding-top: 80px;
+      padding-bottom: 140px;
+    }
+    .subtitle {
+      margin-top: 34px;
+      max-width: 940px;
+      font-family: var(--serif-en);
+      font-style: italic;
+      font-size: 38px;
+      line-height: 1.25;
+      color: var(--muted);
+    }
+    .thesis-card {
+      border: 1px solid var(--hairline);
+      padding: 34px 34px 38px;
+      background: rgba(255, 250, 241, 0.68);
+    }
+    .thesis-card .label,
+    .mini-label {
+      font-family: var(--sans);
+      font-weight: 700;
+      font-size: 17px;
+      letter-spacing: 0;
+      text-transform: none;
+      color: var(--muted);
+      margin-bottom: 18px;
+    }
+    .thesis-card p {
+      font-size: 30px;
+      line-height: 1.28;
+      color: var(--fg);
+    }
+    .main-zone {
+      margin-top: 145px;
+      margin-bottom: 220px;
+      min-height: 640px;
+      display: grid;
+      align-content: center;
+    }
+    .lead {
+      margin-top: 30px;
+      max-width: 930px;
+      font-size: 34px;
+      line-height: 1.32;
+      color: var(--muted);
+    }
+    .cards-3 {
+      margin-top: 58px;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 22px;
+      max-width: 1560px;
+    }
+    .card {
+      border: 1px solid var(--hairline);
+      background: rgba(255, 250, 241, 0.58);
+      padding: 30px;
+      min-height: 230px;
+    }
+    .card strong {
+      display: block;
+      font-family: var(--serif);
+      font-size: 38px;
+      line-height: 1.05;
+      margin-bottom: 18px;
+    }
+    .card p,
+    .card li {
+      font-size: 25px;
+      line-height: 1.32;
+      color: var(--muted);
+    }
+    .card ul {
+      list-style: none;
+      display: grid;
+      gap: 12px;
+    }
+    .card .mono {
+      font-family: var(--mono);
+      color: var(--fg);
+      font-size: 24px;
+    }
+    .speaker-note {
+      position: absolute;
+      left: 86px;
+      right: 86px;
+      bottom: 96px;
+      border-left: 4px solid var(--accent);
+      padding: 14px 18px;
+      font-family: var(--sans);
+      font-size: 24px;
+      line-height: 1.24;
+      color: var(--muted);
+      background: rgba(255, 250, 241, 0.66);
+    }
+    .dark .speaker-note,
+    .s-divider .speaker-note,
+    .s-closing .speaker-note {
+      color: rgba(247, 241, 231, 0.68);
+      background: rgba(255, 255, 255, 0.05);
+    }
+    .diagram-flow {
+      margin-top: 60px;
+      display: grid;
+      grid-template-columns: 1fr 90px 1fr 90px 1fr;
+      align-items: stretch;
+      max-width: 1550px;
+    }
+    .node {
+      border: 1px solid var(--hairline);
+      padding: 34px;
+      min-height: 260px;
+      background: rgba(255, 250, 241, 0.62);
+    }
+    .node h3 {
+      font-family: var(--serif);
+      font-size: 48px;
+      line-height: 1.04;
+      margin-bottom: 20px;
+    }
+    .node p {
+      font-size: 26px;
+      line-height: 1.32;
+      color: var(--muted);
+    }
+    .arrow {
+      display: grid;
+      place-items: center;
+      font-family: var(--serif);
+      font-size: 60px;
+      color: var(--accent);
+    }
+    .chapter {
+      align-self: center;
+      padding-bottom: 130px;
+    }
+    .chapter-num {
+      font-family: var(--sans);
+      font-weight: 700;
+      font-size: 34px;
+      letter-spacing: 0;
+      color: var(--accent);
+      margin-bottom: 28px;
+    }
+    .chapter h2 {
+      font-size: 118px;
+      max-width: 1280px;
+    }
+    .chapter p {
+      margin-top: 36px;
+      max-width: 900px;
+      font-size: 32px;
+      line-height: 1.35;
+      color: rgba(247, 241, 231, 0.68);
+    }
+    .two-grid {
+      margin-top: 58px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 30px;
+      max-width: 1540px;
+    }
+    .compare {
+      border: 1px solid var(--hairline);
+      padding: 34px 38px;
+      min-height: 430px;
+      background: rgba(255, 250, 241, 0.58);
+    }
+    .compare h3 {
+      font-family: var(--serif);
+      font-size: 54px;
+      margin-bottom: 28px;
+    }
+    .compare ul {
+      list-style: none;
+      display: grid;
+      gap: 18px;
+      font-size: 28px;
+      line-height: 1.28;
+      color: var(--muted);
+    }
+    .compare li::before {
+      content: "— ";
+      color: var(--accent);
+    }
+    .timeline {
+      margin-top: 54px;
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      max-width: 1580px;
+      border: 1px solid var(--hairline);
+    }
+    .slot {
+      min-height: 300px;
+      padding: 28px 30px;
+      border-right: 1px solid var(--hairline);
+      background: rgba(255, 250, 241, 0.58);
+    }
+    .slot:last-child { border-right: 0; }
+    .slot time {
+      display: block;
+      font-family: var(--sans);
+      font-weight: 700;
+      font-size: 24px;
+      color: var(--accent);
+      margin-bottom: 62px;
+    }
+    .slot strong {
+      display: block;
+      font-family: var(--serif);
+      font-size: 36px;
+      line-height: 1.04;
+      margin-bottom: 16px;
+    }
+    .slot p {
+      font-size: 24px;
+      line-height: 1.28;
+      color: var(--muted);
+    }
+    .stat-layout {
+      align-self: center;
+      padding-bottom: 138px;
+      display: grid;
+      grid-template-columns: 0.94fr 1fr;
+      gap: 74px;
+      align-items: center;
+    }
+    .big-word {
+      font-family: var(--serif);
+      font-weight: 700;
+      font-size: 178px;
+      line-height: 0.9;
+      color: var(--night-ink);
+      text-wrap: balance;
+    }
+    .evidence-list {
+      border-left: 1px solid var(--hairline-dark);
+      padding-left: 44px;
+      display: grid;
+      gap: 26px;
+    }
+    .evidence-list p {
+      font-size: 30px;
+      line-height: 1.32;
+      color: rgba(247, 241, 231, 0.7);
+    }
+    .evidence-list strong {
+      color: var(--night-ink);
+      font-family: var(--serif);
+      font-size: 40px;
+      display: block;
+      margin-bottom: 6px;
+    }
+    .quote-wrap {
+      align-self: center;
+      max-width: 1380px;
+      padding-bottom: 145px;
+    }
+    .quote-mark {
+      width: 86px;
+      height: 62px;
+      margin-bottom: 24px;
+      color: var(--accent);
+    }
+    blockquote {
+      font-family: var(--serif);
+      font-weight: 700;
+      font-size: 88px;
+      line-height: 1.04;
+      text-wrap: balance;
+    }
+    .quote-source {
+      margin-top: 34px;
+      font-family: var(--sans);
+      font-weight: 700;
+      font-size: 20px;
+      letter-spacing: 0;
+      text-transform: none;
+      color: var(--muted);
+    }
+    .matrix {
+      margin-top: 50px;
+      display: grid;
+      grid-template-columns: 1.1fr 1fr 1fr;
+      max-width: 1580px;
+      border: 1px solid var(--hairline);
+    }
+    .matrix div {
+      min-height: 105px;
+      padding: 22px 26px;
+      border-right: 1px solid var(--hairline);
+      border-bottom: 1px solid var(--hairline);
+      font-size: 25px;
+      line-height: 1.24;
+      color: var(--muted);
+    }
+    .matrix div:nth-child(3n) { border-right: 0; }
+    .matrix div:nth-last-child(-n+3) { border-bottom: 0; }
+    .matrix .head {
+      font-family: var(--sans);
+      font-weight: 700;
+      font-size: 18px;
+      letter-spacing: 0;
+      text-transform: none;
+      color: var(--fg);
+      background: rgba(192, 74, 26, 0.08);
+    }
+    .matrix strong {
+      color: var(--fg);
+      font-family: var(--serif);
+      font-size: 32px;
+      line-height: 1;
+    }
+    .dark .matrix {
+      border-color: var(--hairline-dark);
+    }
+    .dark .matrix div {
+      border-color: var(--hairline-dark);
+      color: rgba(247, 241, 231, 0.68);
+    }
+    .dark .matrix .head {
+      color: var(--night-ink);
+      background: rgba(192, 74, 26, 0.18);
+    }
+    .dark .matrix strong {
+      color: var(--night-ink);
+    }
+    .roadmap {
+      margin-top: 62px;
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 0;
+      max-width: 1570px;
+      border: 1px solid var(--hairline);
+    }
+    .step {
+      min-height: 330px;
+      padding: 30px;
+      border-right: 1px solid var(--hairline);
+      background: rgba(255, 250, 241, 0.58);
+    }
+    .step:last-child { border-right: 0; }
+    .step .num {
+      font-family: var(--sans);
+      font-weight: 700;
+      font-size: 18px;
+      letter-spacing: 0;
+      color: var(--accent);
+      margin-bottom: 70px;
+    }
+    .step strong {
+      display: block;
+      font-family: var(--serif);
+      font-size: 42px;
+      line-height: 1.04;
+      margin-bottom: 18px;
+    }
+    .step p {
+      font-size: 25px;
+      line-height: 1.3;
+      color: var(--muted);
+    }
+    .closing-grid {
+      align-self: center;
+      padding-bottom: 142px;
+      display: grid;
+      grid-template-columns: 1fr 440px;
+      gap: 84px;
+      align-items: end;
+    }
+    .closing-grid h2 {
+      font-size: 120px;
+      max-width: 1180px;
+    }
+    .closing-aside {
+      border: 1px solid var(--hairline-dark);
+      padding: 34px;
+      font-size: 28px;
+      line-height: 1.32;
+      color: rgba(247, 241, 231, 0.72);
+    }
+  </style>
+</head>
+<body>
+  <div class="deck-shell">
+    <div class="deck-stage" id="deck-stage">
+
+      <section class="slide active s-cover" data-screen-label="01 Обложка">
+        <div class="masthead"><span>Deep Agents Workshop</span><span>СберХаб Петербург</span></div>
+        <div class="cover-grid">
+          <div>
+            <div class="kicker">демо + разбор кода · 60 минут</div>
+            <h1>Deep Agents: от агентной петли к <span class="hl">OpenClaw</span></h1>
+            <p class="subtitle">Живой browser-controlling агент на LangGraph, Playwright, OpenRouter и LangSmith: реальные задачи, настоящие ошибки, production-паттерны.</p>
+          </div>
+          <div class="thesis-card">
+            <div class="label">спикер</div>
+            <p>Ник — Data Engineer / AI Developer, Сбербанк, Казань. Формат: демонстрация работающего агента и разбор кода по четырем Jupyter-кукбукам.</p>
+          </div>
+        </div>
+        <aside class="speaker-note">Заметка докладчика: сразу обозначить, что OpenClaw подается как эволюция DeepAgent-подхода: тот же агентный фундамент, но ближе к воспроизводимому продуктовому контуру.</aside>
+        <div class="footer"><span>LangGraph · Playwright · OpenRouter · LangSmith</span><span>HTML only</span></div>
+      </section>
+
+      <section class="slide s-content" data-screen-label="02 Зачем deep agents">
+        <div class="masthead"><span>Deep Agents Workshop</span><span>01 Контекст</span></div>
+        <div class="main-zone">
+          <div>
+            <div class="kicker">ментальная модель</div>
+            <h2>Эволюция проста: от ответа к <span class="hl">действию</span></h2>
+            <p class="lead">Участники увидят, где заканчивается чатбот, почему обычный tool-calling не дает полноценного цикла и что именно добавляет deep agent.</p>
+            <div class="cards-3">
+              <div class="card">
+                <strong>Чатбот / RAG</strong>
+                <p>Отвечает на вопросы и читает базу знаний. Ограничение: не действует.</p>
+              </div>
+              <div class="card">
+                <strong>Tool-calling</strong>
+                <p>Вызывает API и пишет в БД. Ограничение: нет устойчивого цикла.</p>
+              </div>
+              <div class="card">
+                <strong>Deep Agent</strong>
+                <p>Планирует сам, итерирует, управляет браузером и останавливается перед опасным действием.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <aside class="speaker-note">Заметка докладчика: показать лестницу зрелости без маркетинга: участнику должно стать ясно, в какой момент нужен именно deep agent.</aside>
+        <div class="footer"><span>чатбот → tool-calling → deep agent</span><span>контекст перед демо</span></div>
+      </section>
+
+      <section class="slide s-divider" data-screen-label="03 Формула">
+        <div class="masthead"><span>Deep Agents Workshop</span><span>02 Формула</span></div>
+        <div class="chapter">
+          <div class="chapter-num">02</div>
+          <h2>Deep Agent = LLM + Tools + State + Loop + <span class="hl">Human checkpoint</span></h2>
+          <p>Это не «модель с кнопками». Это управляемый граф исполнения, где состояние, инструменты и прерывания становятся частью архитектуры.</p>
+        </div>
+        <aside class="speaker-note">Заметка докладчика: здесь связать исходный DeepAgent с OpenClaw: OpenClaw можно объяснять как следующий слой вокруг этой формулы, а не как отказ от нее.</aside>
+        <div class="footer"><span>agent loop</span><span>HITL как production-паттерн</span></div>
+      </section>
+
+      <section class="slide s-two" data-screen-label="04 Архитектура демо">
+        <div class="masthead"><span>Deep Agents Workshop</span><span>03 Архитектура</span></div>
+        <div class="main-zone">
+          <div>
+            <div class="kicker">stategraph вживую</div>
+            <h2>Демо-агент построен как граф: <span class="hl">state → LLM → tools → loop</span></h2>
+            <div class="two-grid">
+              <div class="compare">
+                <h3>State</h3>
+                <ul>
+                  <li>messages</li>
+                  <li>plan</li>
+                  <li>pending_action</li>
+                  <li>browser_context</li>
+                  <li>result</li>
+                </ul>
+              </div>
+              <div class="compare">
+                <h3>Tools</h3>
+                <ul>
+                  <li>browser_navigate(url)</li>
+                  <li>browser_click(selector)</li>
+                  <li>browser_read_page()</li>
+                  <li>bash(cmd, readonly=True)</li>
+                  <li>save_report() ← HITL</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+        <aside class="speaker-note">Заметка докладчика: не читать схему построчно; подчеркнуть, почему StateGraph лучше «чистого LangChain» для агента с циклом и прерываниями.</aside>
+        <div class="footer"><span>conditional edge · ToolNode · interrupt_before</span><span>код будет разобран отдельно</span></div>
+      </section>
+
+      <section class="slide s-content" data-screen-label="05 Программа 60 минут">
+        <div class="masthead"><span>Deep Agents Workshop</span><span>04 Программа</span></div>
+        <div class="main-zone">
+          <div>
+            <div class="kicker">ритм воркшопа</div>
+            <h2>Один час: сначала модель, потом <span class="hl">живой агент</span>, затем код и трассы</h2>
+            <div class="timeline">
+              <div class="slot">
+                <time>0–10</time>
+                <strong>Архитектура</strong>
+                <p>Эволюция чатбот → tool-calling → deep agent. StateGraph, ToolNode, conditional edge.</p>
+              </div>
+              <div class="slot">
+                <time>10–30</time>
+                <strong>Демо</strong>
+                <p>Три сценария: успех, human-in-the-loop, ошибка → отладка.</p>
+              </div>
+              <div class="slot">
+                <time>30–40</time>
+                <strong>Кукбуки</strong>
+                <p>4 Jupyter notebook: паттерны, которые можно забрать в проект.</p>
+              </div>
+              <div class="slot">
+                <time>40–50</time>
+                <strong>LangSmith</strong>
+                <p>Trace, token cost, latency breakdown, галлюцинации инструментов.</p>
+              </div>
+              <div class="slot">
+                <time>50–60</time>
+                <strong>Q&A</strong>
+                <p>AutoGen / CrewAI, стоимость, безопасность tool-calling, дебаг без LangSmith.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <aside class="speaker-note">Заметка докладчика: проговорить, что это не tutorial-кодинг в вакууме; главный темп задает работающий агент и его наблюдаемое поведение.</aside>
+        <div class="footer"><span>60 минут</span><span>демо + разбор кода</span></div>
+      </section>
+
+      <section class="slide s-data dark" data-screen-label="06 Три демо">
+        <div class="masthead"><span>Deep Agents Workshop</span><span>05 Live demo</span></div>
+        <div class="stat-layout">
+          <div>
+            <div class="kicker">проверка в бою</div>
+            <div class="big-word">3 сценария</div>
+          </div>
+          <div class="evidence-list">
+            <p><strong>Успех</strong>«Зайди на cbr.ru, найди текущую ключевую ставку ЦБ, сохрани в отчёт».</p>
+            <p><strong>Human-in-the-loop</strong>Агент доходит до `save_report`, объясняет действие и ждет [y/n] перед записью.</p>
+            <p><strong>Ошибка → отладка</strong>Несуществующий сайт, retry, structured error и переход в LangSmith trace.</p>
+          </div>
+        </div>
+        <aside class="speaker-note">Заметка докладчика: это эмоциональный центр воркшопа; важно показать терминал со streaming токенов, браузер на экране и итоговый файл.</aside>
+        <div class="footer"><span>реальные задачи · настоящие ошибки</span><span>не sandbox-only demo</span></div>
+      </section>
+
+      <section class="slide s-quote" data-screen-label="07 Четыре кукбука">
+        <div class="masthead"><span>Deep Agents Workshop</span><span>06 Материалы</span></div>
+        <div class="quote-wrap">
+          <svg class="quote-mark" viewBox="0 0 120 86" aria-hidden="true">
+            <path d="M48 0 28 44h22v42H0V48L24 0h24Zm72 0-20 44h22v42H72V48L96 0h24Z" fill="currentColor"/>
+          </svg>
+          <blockquote>Участник уходит не с впечатлением, а с четырьмя запускаемыми Jupyter-кукбуками.</blockquote>
+          <div class="quote-source">01 graph basics · 02 browser agent · 03 HITL and safety · 04 observability</div>
+        </div>
+        <aside class="speaker-note">Заметка докладчика: акцентировать практическую ценность — notebooks самодостаточны, каждый можно открыть, запустить и адаптировать.</aside>
+        <div class="footer"><span>самодостаточные notebook</span><span>fork и запускай</span></div>
+      </section>
+
+      <section class="slide s-content dark" data-screen-label="08 Observability и safety">
+        <div class="masthead"><span>Deep Agents Workshop</span><span>07 Production-паттерны</span></div>
+        <div class="main-zone">
+          <div>
+            <div class="kicker">контроль перед действием</div>
+            <h2>Production-ready агент — это не скорость, а <span class="hl">управляемость</span></h2>
+            <div class="matrix">
+              <div class="head">паттерн</div>
+              <div class="head">как показать</div>
+              <div class="head">зачем бизнесу</div>
+              <div><strong>HITL</strong></div>
+              <div>`interrupt_before=['save_report']`, pending_action и явное [y/n]</div>
+              <div>агент не совершает опасное действие без разрешения</div>
+              <div><strong>Checkpointing</strong></div>
+              <div>SQLiteSaver хранит state между вызовами графа</div>
+              <div>можно восстановить ход исполнения и продолжить</div>
+              <div><strong>Structured errors</strong></div>
+              <div>ошибка браузера → retry → исчерпание попыток → явный результат</div>
+              <div>отказ становится наблюдаемым состоянием, а не молчаливым провалом</div>
+              <div><strong>LangSmith</strong></div>
+              <div>ноды, tool calls, токены, latency, галлюцинация параметра</div>
+              <div>появляется инженерный язык дебага и стоимости</div>
+            </div>
+          </div>
+        </div>
+        <aside class="speaker-note">Заметка докладчика: прямо назвать HITL не ограничением, а production-паттерном для корпоративной среды.</aside>
+        <div class="footer"><span>LangSmith workflow</span><span>безопасность tool-calling</span></div>
+      </section>
+
+      <section class="slide s-content" data-screen-label="09 Технический стек">
+        <div class="masthead"><span>Deep Agents Workshop</span><span>08 Stack</span></div>
+        <div class="main-zone">
+          <div>
+            <div class="kicker">инструменты без vendor lock-in</div>
+            <h2>Стек выбран так, чтобы агент был <span class="hl">заменяемым и наблюдаемым</span></h2>
+            <div class="cards-3">
+              <div class="card">
+                <strong>Оркестрация</strong>
+                <ul>
+                  <li>LangGraph: StateGraph, ToolNode, checkpointer, interrupt</li>
+                  <li>LangChain: базовые абстракции и `@tool`</li>
+                </ul>
+              </div>
+              <div class="card">
+                <strong>Исполнение</strong>
+                <ul>
+                  <li>OpenRouter: claude / gpt / gemini / qwen через единый API</li>
+                  <li>Playwright: headless browser как инструмент LLM</li>
+                </ul>
+              </div>
+              <div class="card">
+                <strong>Контроль</strong>
+                <ul>
+                  <li>LangSmith: трассы, токены, latency, дебаг</li>
+                  <li>SQLiteSaver: состояние между вызовами</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+        <aside class="speaker-note">Заметка докладчика: подчеркнуть причину OpenRouter — одна строка меняет модель, это удобно под разные корпоративные политики.</aside>
+        <div class="footer"><span>LangGraph · LangChain · OpenRouter · Playwright · LangSmith · SQLiteSaver</span><span>технический стек</span></div>
+      </section>
+
+      <section class="slide s-closing" data-screen-label="10 Что унесут">
+        <div class="masthead"><span>Deep Agents Workshop</span><span>09 Close</span></div>
+        <div class="closing-grid">
+          <div>
+            <div class="kicker">готов к подтверждению участия</div>
+            <h2>На выходе: <span class="hl">рабочий шаблон</span> browser agent и ясная модель deep agents</h2>
+          </div>
+          <div class="closing-aside">Участники забирают 4 кукбука, production-паттерны HITL / checkpointing / structured errors, LangSmith workflow и готовый скелет агента на LangGraph. Подготовка: месяц; к мероприятию будут готовы агент, notebooks, реальные traces и резервные сценарии.</div>
+        </div>
+        <aside class="speaker-note">Заметка докладчика: закрыть не обещанием, а проверяемым набором артефактов. Упомянуть опыт спикера: Spark, Hadoop, Data Vault 2.0, LLM-агент анализа инцидентов и mail-agent.</aside>
+        <div class="footer"><span>Ник · Data Engineer / AI Developer · Сбербанк, Казань</span><span>OpenClaw как эволюция DeepAgent</span></div>
+      </section>
+
+    </div>
+  </div>
+
+  <!-- Framework chrome — DO NOT EDIT below this line. -->
+  <nav class="deck-counter" role="navigation" aria-label="Deck navigation">
+    <button type="button" id="deck-prev" aria-label="Previous slide">‹</button>
+    <span class="deck-count"><span id="deck-cur">01</span> <span class="total">/ <span id="deck-total">01</span></span></span>
+    <button type="button" id="deck-next" aria-label="Next slide">›</button>
+  </nav>
+  <div class="deck-hint">← / → · space</div>
+
+  <script>
+    (function () {
+      var stage = document.getElementById('deck-stage');
+      var slides = Array.prototype.slice.call(document.querySelectorAll('.slide'));
+      var prev = document.getElementById('deck-prev');
+      var next = document.getElementById('deck-next');
+      var cur = document.getElementById('deck-cur');
+      var total = document.getElementById('deck-total');
+      var STORE = 'deck:idx:' + (location.pathname || '/');
+      var idx = 0;
+
+      // ---- scale-to-fit ---------------------------------------------------
+      // The stage is 1920×1080 and sits at .deck-shell's (0, 0) in normal
+      // block flow — the shell is intentionally NOT a grid/flex container,
+      // so the stage's natural top-left is (0, 0). We scale via transform
+      // with transform-origin:top-left, then translate by the remainder to
+      // center the scaled box in the viewport. This survives nested
+      // transforms (e.g. when the OD viewer wraps the iframe in its own
+      // scale wrapper at zoom != 100%).
+      function fit() {
+        var sw = window.innerWidth;
+        var sh = window.innerHeight;
+        var pad = 32;
+        var s = Math.min((sw - pad) / 1920, (sh - pad) / 1080);
+        if (!isFinite(s) || s <= 0) s = 1;
+        var tx = (sw - 1920 * s) / 2;
+        var ty = (sh - 1080 * s) / 2;
+        stage.style.transform = 'translate(' + tx + 'px,' + ty + 'px) scale(' + s + ')';
+      }
+
+      // ---- navigation -----------------------------------------------------
+      function pad2(n) { return (n < 10 ? '0' : '') + n; }
+      function paint() {
+        slides.forEach(function (el, i) { el.classList.toggle('active', i === idx); });
+        if (cur) cur.textContent = pad2(idx + 1);
+        if (total) total.textContent = pad2(slides.length);
+        if (prev) prev.toggleAttribute('disabled', idx <= 0);
+        if (next) next.toggleAttribute('disabled', idx >= slides.length - 1);
+      }
+      function go(i) {
+        idx = Math.max(0, Math.min(slides.length - 1, i));
+        paint();
+        try { localStorage.setItem(STORE, String(idx)); } catch (_) {}
+      }
+      function onKey(e) {
+        var t = e.target;
+        if (t && (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA' || t.isContentEditable)) return;
+        if (e.key === 'ArrowRight' || e.key === 'PageDown' || e.key === ' ') { e.preventDefault(); go(idx + 1); }
+        else if (e.key === 'ArrowLeft' || e.key === 'PageUp') { e.preventDefault(); go(idx - 1); }
+        else if (e.key === 'Home') { e.preventDefault(); go(0); }
+        else if (e.key === 'End') { e.preventDefault(); go(slides.length - 1); }
+      }
+      // Capture phase + listen on both targets — inside the OD iframe,
+      // focus may be on window OR document; a single non-capture listener
+      // silently misses presses.
+      window.addEventListener('keydown', onKey, true);
+      document.addEventListener('keydown', onKey, true);
+      if (prev) prev.addEventListener('click', function () { go(idx - 1); });
+      if (next) next.addEventListener('click', function () { go(idx + 1); });
+
+      // Auto-focus body so arrow keys work without an initial click.
+      document.body.setAttribute('tabindex', '-1');
+      document.body.style.outline = 'none';
+      function focusDeck() { try { window.focus(); document.body.focus({ preventScroll: true }); } catch (_) {} }
+      document.addEventListener('mousedown', focusDeck);
+      window.addEventListener('load', focusDeck);
+
+      // Restore last position.
+      try {
+        var saved = parseInt(localStorage.getItem(STORE) || '0', 10);
+        if (!isNaN(saved) && saved >= 0 && saved < slides.length) idx = saved;
+      } catch (_) {}
+
+      window.addEventListener('resize', fit);
+      fit();
+      paint();
+      focusDeck();
+    })();
+  </script>
+</body>
+</html>

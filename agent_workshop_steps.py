@@ -39,7 +39,11 @@ WORKSHOP_STEP = 6  # Final version: also expose stricter SWE mode.
 # Step 1: model + base prompt
 # ---------------------------------------------------------------------------
 
-DEFAULT_MODEL = "openai:gpt-5.3-codex"
+DEFAULT_MODEL = "openrouter:tencent/hy3:free"
+DEFAULT_MINIMAX_BASE_URL = "https://api.minimaxi.chat/v1"
+DEFAULT_MINIMAX_MODEL = "MiniMax-M2"
+DEFAULT_DEEPSEEK_BASE_URL = "https://api.deepseek.com/v1"
+DEFAULT_DEEPSEEK_MODEL = "deepseek-v4-flash"
 
 BASE_PROMPT = """\
 You are OpenClaw, an experimental open-source coding agent built with LangChain
@@ -83,7 +87,28 @@ def _workshop_step() -> int:
     return step
 
 
-def _model() -> str:
+def _model():
+    provider = os.getenv("OPENCLAW_PROVIDER")
+    if provider == "minimax":
+        from langchain_openai import ChatOpenAI
+
+        return ChatOpenAI(
+            model=os.getenv("MINIMAX_MODEL", DEFAULT_MINIMAX_MODEL),
+            api_key=os.getenv("MINIMAX_API_KEY"),
+            base_url=os.getenv("MINIMAX_BASE_URL", DEFAULT_MINIMAX_BASE_URL),
+            temperature=0,
+        )
+
+    if provider == "deepseek":
+        from langchain_openai import ChatOpenAI
+
+        return ChatOpenAI(
+            model=os.getenv("DEEPSEEK_MODEL", DEFAULT_DEEPSEEK_MODEL),
+            api_key=os.getenv("DEEPSEEK_API_KEY"),
+            base_url=os.getenv("DEEPSEEK_BASE_URL", DEFAULT_DEEPSEEK_BASE_URL),
+            temperature=0,
+        )
+
     return os.getenv("OPENCLAW_MODEL", DEFAULT_MODEL)
 
 
@@ -129,6 +154,11 @@ def _backend():
 def _connector_tools(step: int):
     if step < 3:
         return []
+
+    if step >= 6:
+        from connectors import CONNECTOR_TOOLS
+
+        return CONNECTOR_TOOLS
 
     from connectors.demo import DEMO_TOOLS
 

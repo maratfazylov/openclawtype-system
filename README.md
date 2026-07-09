@@ -16,6 +16,7 @@ This repo is intentionally small:
 - `langgraph.json` exposes both assistants to `langgraph dev`
 - `connectors/` shows how external systems become agent tools
 - `presentation/` contains a ManimGL workshop deck
+- `PRESENTATION_RUNBOOK.md` explains the recommended demo narrative and limits
 - `AGENTS.md` and `skills/` provide durable working instructions
 - `agent.json` is a starting point for later `deepagents deploy` experiments
 
@@ -65,7 +66,8 @@ For a live walkthrough:
 3. Move to Step 3 to add the local issue-tracker connector.
 4. Move to Step 4 to add Telegram as an external connector.
 5. Move to Step 5 to add subagents, skills, and memory.
-6. Move to Step 6 and switch to `openclaw_steps_swe` for the stricter SWE flow.
+6. Move to Step 6 to use the full connector set and switch to
+   `openclaw_steps_swe` for the stricter SWE flow.
 
 You can also switch steps without editing the file:
 
@@ -127,6 +129,9 @@ Use them when the workshop format is more notebook-driven than UI-driven:
 - `04_telegram_connector.ipynb`
 - `05_subagents_skills_memory.ipynb`
 - `06_swe_mode.ipynb`
+- `07_jenkins_connector.ipynb`
+- `08_single_notebook_langgraph_project.ipynb` - self-contained notebook that
+  generates a LangGraph runtime and `langgraph.notebook.json`
 
 ## Workshop Step: Add a Connector
 
@@ -135,7 +140,9 @@ tools. The demo connector is local and keyless, so it is safe to show live:
 
 - `connectors/demo.py` contains a fake issue tracker
 - `connectors/telegram.py` contains a Telegram Bot API connector
-- `CONNECTOR_TOOLS` exports issue-tracker and Telegram tools
+- `connectors/jenkins.py` contains a Jenkins job connector
+- `connectors/vk.py` contains a VK API connector
+- `CONNECTOR_TOOLS` exports issue-tracker, Telegram, Jenkins, and VK tools
 - `agent.py` passes those tools into both Deep Agents
 
 Try this prompt in Studio or Deep Agents UI:
@@ -168,6 +175,78 @@ TELEGRAM_CHAT_ID=...
 ```
 
 Then ask the agent to call `send_telegram_message` with `dry_run=false`.
+
+Jenkins connector demo prompt:
+
+```text
+Use the Jenkins connector. Check the configured job info, then trigger a real
+smoke build for the marat job with OPENCLAW_SMOKE=true.
+```
+
+The default job URL is:
+
+```bash
+JENKINS_JOB_URL=https://devops.brojs.ru/job/marat/
+```
+
+To trigger builds, configure either a job token:
+
+```bash
+JENKINS_JOB_TOKEN=...
+```
+
+or Jenkins API credentials:
+
+```bash
+JENKINS_USERNAME=...
+JENKINS_API_TOKEN=...
+```
+
+This Jenkins instance is used as a test DevOps endpoint, so
+`trigger_jenkins_job` performs a real build by default. Pass `dry_run=true` when
+you only want to preview the request payload.
+
+For an end-to-end smoke walkthrough, open
+`workshop_notebooks/07_jenkins_connector.ipynb`. It verifies that the agent sees
+Jenkins tools, previews the request, reads job metadata, and triggers a real
+smoke build.
+
+See `JENKINS_PIPELINE.md` for a minimal Jenkins Pipeline job and Jenkinsfile
+that match this notebook.
+
+VK connector demo prompt:
+
+```text
+Use the VK connector in dry-run mode. Prepare a message payload for peer_id 123
+that says OpenClaw VK connector is configured.
+```
+
+Configure the token and API version in `.env`:
+
+```bash
+VK_ACCESS_TOKEN=...
+VK_API_VERSION=5.199
+```
+
+Use `get_vk_current_user` to verify the token. Keep `send_vk_message` in
+`dry_run=true` until the target `peer_id` is confirmed.
+
+VK can also trigger the running LangGraph assistant through `langgraph-sdk`.
+Start LangGraph first:
+
+```bash
+uv run langgraph dev --config langgraph.notebook.json
+```
+
+Then run the VK polling bridge once in dry-run mode:
+
+```bash
+VK_BRIDGE_ONCE=1 VK_BRIDGE_DRY_RUN=1 uv run python scripts/vk_langgraph_bridge.py
+```
+
+After validating the payload, set `VK_BRIDGE_DRY_RUN=0` to create real
+LangGraph runs. Set `VK_BRIDGE_REPLY_TO_VK=1` only when you want the bridge to
+send the agent result back to VK.
 
 ## ManimGL Presentation
 

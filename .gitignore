@@ -2,6 +2,9 @@
 .venv/
 .pytest_cache/
 .langgraph_api/
+.openclaw_notebook_runtime/
+.openclaw_vk_bridge_state.json
+langgraph.notebook.json
 __pycache__/
 *.pyc
 .DS_Store

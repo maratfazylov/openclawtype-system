@@ -5,6 +5,8 @@ description = "OpenClaw-like coding agent prototype using LangChain Deep Agents.
 requires-python = ">=3.11"
 dependencies = [
     "deepagents==0.6.11",
+    "httpx>=0.28.0",
+    "langgraph-sdk>=0.2.0",
     "langgraph-cli[inmem]>=0.4.30,<0.5.0",
     "langchain-openai>=1.1.0",
     "langchain-openrouter>=0.2.0",

@@ -3,7 +3,9 @@ import json
 from pathlib import Path
 
 from connectors.demo import get_demo_issue, list_demo_issues
+from connectors.jenkins import trigger_jenkins_job
 from connectors.telegram import send_telegram_message
+from connectors.vk import send_vk_message, trigger_langgraph_from_vk_message
 
 
 def test_langgraph_config_exposes_expected_assistants() -> None:
@@ -29,6 +31,7 @@ def test_workshop_agent_is_split_into_uncommentable_steps() -> None:
     assert "WORKSHOP_STEP = 6" in source
     assert "OPENCLAW_WORKSHOP_STEP" in source
     assert "OPENCLAW_ENABLE_LOCAL_SHELL" in source
+    assert "CONNECTOR_TOOLS" in source
 
 
 def test_workshop_notebooks_are_present_and_valid() -> None:
@@ -40,6 +43,8 @@ def test_workshop_notebooks_are_present_and_valid() -> None:
         "04_telegram_connector.ipynb",
         "05_subagents_skills_memory.ipynb",
         "06_swe_mode.ipynb",
+        "07_jenkins_connector.ipynb",
+        "08_single_notebook_langgraph_project.ipynb",
     ]
 
     notebook_dir = Path("workshop_notebooks")
@@ -73,6 +78,54 @@ def test_telegram_connector_dry_run_does_not_require_credentials() -> None:
 
     assert '"dry_run": true' in result
     assert "OpenClaw connectors are working." in result
+
+
+def test_jenkins_connector_dry_run_masks_job_token(monkeypatch) -> None:
+    token = "abcd1234TOKENVALUEwxyz9876"
+    monkeypatch.setenv("JENKINS_JOB_TOKEN", token)
+
+    result = trigger_jenkins_job.invoke({"dry_run": True})
+
+    assert '"dry_run": true' in result
+    assert "https://devops.brojs.ru/job/marat/" in result
+    assert "abcd...9876" in result
+    assert token not in result
+
+
+def test_vk_connector_dry_run_masks_access_token(monkeypatch) -> None:
+    token = "vk1.a.syntheticACCESS_TOKENvalue"
+    monkeypatch.setenv("VK_ACCESS_TOKEN", token)
+
+    result = send_vk_message.invoke(
+        {
+            "peer_id": "123",
+            "message": "OpenClaw VK connector is configured.",
+            "random_id": 42,
+            "dry_run": True,
+        }
+    )
+
+    assert '"dry_run": true' in result
+    assert "messages.send" in result
+    assert "OpenClaw VK connector is configured." in result
+    assert "vk1....alue" in result
+    assert token not in result
+
+
+def test_vk_connector_can_preview_langgraph_trigger() -> None:
+    result = trigger_langgraph_from_vk_message.invoke(
+        {
+            "peer_id": "123",
+            "message": "OpenClaw VK bridge demo.",
+            "vk_message_id": "demo-1",
+            "dry_run": True,
+        }
+    )
+
+    assert '"dry_run": true' in result
+    assert "openclaw_notebook" in result
+    assert "OpenClaw VK bridge demo." in result
+    assert '\\"source\\": \\"vk\\"' in result
 
 
 def test_manim_presentation_targets_3b1b_manim_gl() -> None:

@@ -1,0 +1,804 @@
+<!doctype html>
+<!-- Single-file horizontal-swipe HTML deck based on OD simple-deck seed. -->
+<html lang="ru">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Deep Agents и OpenClaw · архитектура воркшопа · v2</title>
+  <style>
+    :root {
+      --bg:      oklch(100% 0 89.9);
+      --surface: oklch(100% 0 89.9);
+      --fg:      oklch(0% 0 0);
+      --muted:   oklch(55% 0.059 185);
+      --border:  oklch(93.2% 0.112 153.5);
+      --accent:  oklch(68.7% 0.176 37.1);
+
+      --signal-cyan:  oklch(64% 0.087 207.2);
+      --signal-green: oklch(88.4% 0.232 145.9);
+      --deep-teal:    oklch(49.1% 0.084 211.4);
+      --accent-soft: color-mix(in oklch, var(--accent) 13%, transparent);
+      --cyan-soft: color-mix(in oklch, var(--signal-cyan) 14%, transparent);
+      --green-soft: color-mix(in oklch, var(--signal-green) 22%, transparent);
+      --ink-soft: color-mix(in oklch, var(--fg) 5%, transparent);
+      --dark-line: color-mix(in oklch, var(--bg) 13%, transparent);
+
+      --font-display: "SB Sans Display", "Suisse Intl", "Helvetica Neue", Arial, sans-serif;
+      --font-body:    "SB Sans Text", "SB Sans Display", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+      --font-mono:    "JetBrains Mono", "IBM Plex Mono", ui-monospace, Menlo, monospace;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; }
+    html, body { margin: 0; height: 100%; }
+    body {
+      background: var(--bg);
+      color: var(--fg);
+      font-family: var(--font-body);
+      font-size: 18px;
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+      display: flex;
+      overflow-x: auto;
+      overflow-y: hidden;
+      scroll-snap-type: x mandatory;
+      scroll-behavior: smooth;
+    }
+    body::-webkit-scrollbar { display: none; }
+    p { text-wrap: pretty; }
+    h1, h2, h3 { text-wrap: balance; }
+
+    .slide {
+      flex: 0 0 100vw;
+      width: 100vw;
+      height: 100vh;
+      scroll-snap-align: start;
+      padding: clamp(48px, 7vw, 92px) clamp(48px, 8vw, 108px);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      position: relative;
+      overflow: hidden;
+      isolation: isolate;
+      background-image:
+        linear-gradient(to right, color-mix(in oklch, var(--fg) 3%, transparent) 1px, transparent 1px),
+        linear-gradient(to bottom, color-mix(in oklch, var(--fg) 3%, transparent) 1px, transparent 1px);
+      background-size: 80px 80px;
+    }
+    .slide.light { background: var(--bg); color: var(--fg); }
+    .slide.dark  {
+      background: var(--fg);
+      color: var(--bg);
+      background-image:
+        radial-gradient(circle at 84% 14%, color-mix(in oklch, var(--signal-cyan) 18%, transparent), transparent 28%),
+        linear-gradient(to right, color-mix(in oklch, var(--bg) 7%, transparent) 1px, transparent 1px),
+        linear-gradient(to bottom, color-mix(in oklch, var(--bg) 6%, transparent) 1px, transparent 1px);
+      background-size: auto, 80px 80px, 80px 80px;
+    }
+    .slide::after {
+      content: attr(data-screen-label);
+      position: absolute;
+      top: 28px;
+      right: clamp(48px, 8vw, 108px);
+      font-family: var(--font-mono);
+      font-size: 11px;
+      letter-spacing: 0.04em;
+      color: var(--muted);
+      z-index: 1;
+    }
+    .slide.dark::after { color: color-mix(in oklch, var(--bg) 52%, transparent); }
+    .slide > * { position: relative; z-index: 2; }
+    .slide.dark .muted,
+    .slide.dark .lead,
+    .slide.dark .caption,
+    .slide.dark .note { color: color-mix(in oklch, var(--bg) 72%, transparent); }
+    .slide.dark .border { border-color: color-mix(in oklch, var(--bg) 18%, transparent); }
+    .slide.dark .card,
+    .slide.dark .node,
+    .slide.dark .notes {
+      background: color-mix(in oklch, var(--bg) 7%, transparent);
+      border-color: color-mix(in oklch, var(--bg) 16%, transparent);
+      color: var(--bg);
+    }
+    .slide.hero { padding-block: clamp(64px, 9vw, 124px); }
+    .slide.center { align-items: center; text-align: center; justify-content: center; }
+    .slide.center .body, .slide.center .lead { margin-inline: auto; }
+
+    .eyebrow {
+      font-family: var(--font-mono);
+      font-size: 12px;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin: 0 0 24px;
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .eyebrow::before {
+      content: "";
+      width: 26px;
+      height: 2px;
+      background: currentColor;
+      display: inline-block;
+    }
+    .h-hero {
+      font-family: var(--font-display);
+      font-size: clamp(58px, 8vw, 108px);
+      line-height: 1.02;
+      letter-spacing: 0;
+      margin: 0 0 20px;
+      max-width: 16ch;
+      font-weight: 650;
+    }
+    .h-xl {
+      font-family: var(--font-display);
+      font-size: clamp(42px, 5vw, 66px);
+      line-height: 1.08;
+      letter-spacing: 0;
+      margin: 0 0 20px;
+      max-width: 22ch;
+      font-weight: 650;
+    }
+    .h-md {
+      font-family: var(--font-display);
+      font-size: clamp(30px, 3vw, 40px);
+      line-height: 1.18;
+      letter-spacing: 0;
+      margin: 0 0 18px;
+      font-weight: 620;
+    }
+    .lead {
+      font-size: clamp(20px, 1.55vw, 25px);
+      line-height: 1.48;
+      color: var(--muted);
+      max-width: 62ch;
+      margin: 0;
+    }
+    .meta, .mono {
+      font-family: var(--font-mono);
+      font-size: 13px;
+      color: var(--muted);
+      font-variant-numeric: tabular-nums;
+    }
+    .accent { color: var(--accent); }
+    .cyan { color: var(--signal-cyan); }
+
+    .two-col {
+      display: grid;
+      grid-template-columns: minmax(0, 0.95fr) minmax(0, 1.05fr);
+      gap: 56px;
+      align-items: start;
+      margin-top: 34px;
+    }
+    .three-col {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+      margin-top: 36px;
+    }
+    .card, .node {
+      border: 1px solid var(--border);
+      background: var(--surface);
+      padding: 20px 22px;
+      border-radius: 6px;
+      box-shadow: 0 1px 0 color-mix(in oklch, var(--fg) 6%, transparent);
+    }
+    .card h3, .node h3 {
+      margin: 0 0 8px;
+      font-size: 20px;
+      line-height: 1.2;
+      font-weight: 650;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .card p, .node p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 16px;
+      line-height: 1.45;
+    }
+    .slide.dark .card p,
+    .slide.dark .node p { color: color-mix(in oklch, var(--bg) 72%, transparent); }
+
+    .pt-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 30px;
+      margin-top: 40px;
+    }
+    .pt {
+      border-top: 2px solid var(--signal-cyan);
+      padding-top: 15px;
+      position: relative;
+    }
+    .pt::before {
+      content: "";
+      position: absolute;
+      top: -5px;
+      left: 0;
+      width: 9px;
+      height: 9px;
+      background: var(--signal-cyan);
+      border-radius: 50%;
+    }
+    .pt h3 {
+      font-size: 20px;
+      font-weight: 650;
+      margin: 0 0 8px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      line-height: 1.2;
+    }
+    .pt p { color: var(--muted); margin: 0; font-size: 16px; line-height: 1.45; }
+    .slide.dark .pt p { color: color-mix(in oklch, var(--bg) 70%, transparent); }
+
+    .pipeline {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 22px;
+      margin-top: 38px;
+    }
+    .step {
+      border: 1px solid color-mix(in oklch, var(--signal-cyan) 42%, transparent);
+      border-radius: 6px;
+      padding: 18px 18px 20px;
+      min-height: 166px;
+      background: color-mix(in oklch, var(--surface) 86%, var(--cyan-soft));
+    }
+    .slide.dark .step {
+      background: color-mix(in oklch, var(--bg) 7%, transparent);
+      border-color: color-mix(in oklch, var(--signal-cyan) 36%, transparent);
+    }
+    .step .nb { font-family: var(--font-mono); font-size: 13px; color: var(--signal-cyan); letter-spacing: 0.04em; }
+    .step h3 { font-family: var(--font-display); font-size: 23px; font-weight: 650; margin: 6px 0; line-height: 1.18; }
+    .step p { color: var(--muted); margin: 0; font-size: 14px; line-height: 1.45; }
+    .slide.dark .step p { color: color-mix(in oklch, var(--bg) 70%, transparent); }
+
+    .ba-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 54px; margin-top: 34px; }
+    .ba-col .ba-label {
+      font-family: var(--font-mono);
+      font-size: 12px;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin: 0 0 12px;
+    }
+    .ba-col h3 { font-family: var(--font-display); font-size: 32px; line-height: 1.12; margin: 0 0 14px; }
+    .ba-col h3 {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+    }
+    .ba-col p { color: var(--muted); font-size: 17px; line-height: 1.46; margin: 0; }
+
+    .stat-num {
+      font-family: var(--font-display);
+      font-size: clamp(120px, 20vw, 248px);
+      line-height: 0.9;
+      color: var(--signal-cyan);
+      font-weight: 750;
+      margin: 0 0 16px;
+      font-variant-numeric: tabular-nums;
+    }
+    .stat-caption {
+      font-size: clamp(20px, 1.7vw, 26px);
+      color: var(--muted);
+      max-width: 32ch;
+      margin: 0;
+    }
+
+    .diagram {
+      display: grid;
+      gap: 18px;
+      margin-top: 34px;
+    }
+    .diagram.flow-3 { grid-template-columns: 1fr auto 1fr auto 1fr; align-items: center; }
+    .arrow {
+      font-family: var(--font-mono);
+      color: var(--signal-cyan);
+      font-size: 28px;
+      line-height: 1;
+    }
+    .node {
+      min-height: 128px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+    .node .tag {
+      display: inline-block;
+      width: fit-content;
+      font-family: var(--font-mono);
+      font-size: 12px;
+      color: var(--deep-teal);
+      background: var(--cyan-soft);
+      padding: 4px 8px;
+      border-radius: 999px;
+      margin-bottom: 12px;
+    }
+    .slide.dark .node .tag { color: var(--signal-green); background: color-mix(in oklch, var(--signal-green) 16%, transparent); }
+    .icon {
+      width: 24px;
+      height: 24px;
+      flex: 0 0 24px;
+      stroke: currentColor;
+      fill: none;
+      stroke-width: 1.7;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      color: var(--deep-teal);
+    }
+    .slide.dark .icon { color: var(--signal-green); }
+    .icon-chip {
+      width: 44px;
+      height: 44px;
+      display: inline-grid;
+      place-items: center;
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      background: var(--surface);
+      color: var(--deep-teal);
+      margin-bottom: 18px;
+    }
+    .slide.dark .icon-chip {
+      border-color: var(--dark-line);
+      background: color-mix(in oklch, var(--bg) 7%, transparent);
+      color: var(--signal-green);
+    }
+
+    .table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 30px;
+      font-size: 16px;
+    }
+    .table th, .table td {
+      border-bottom: 1px solid var(--border);
+      padding: 13px 14px;
+      text-align: left;
+      vertical-align: top;
+    }
+    .table th {
+      font-family: var(--font-mono);
+      font-size: 12px;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+    .slide.dark .table th,
+    .slide.dark .table td { border-color: color-mix(in oklch, var(--bg) 17%, transparent); }
+    .danger { color: var(--signal-green); font-weight: 650; }
+
+    pre.code {
+      margin: 28px 0 0;
+      padding: 22px 24px;
+      border: 1px solid var(--border);
+      background: color-mix(in oklch, var(--fg) 3%, var(--surface));
+      border-radius: 6px;
+      font-family: var(--font-mono);
+      font-size: 18px;
+      line-height: 1.48;
+      overflow: hidden;
+      white-space: pre-wrap;
+    }
+    .slide.dark pre.code {
+      background: color-mix(in oklch, var(--bg) 8%, transparent);
+      border-color: color-mix(in oklch, var(--bg) 16%, transparent);
+      color: var(--bg);
+    }
+
+    .notes {
+      position: absolute;
+      left: clamp(48px, 8vw, 108px);
+      right: clamp(48px, 8vw, 108px);
+      bottom: 32px;
+      border-top: 1px solid var(--border);
+      padding-top: 12px;
+      font-size: 13px;
+      color: var(--muted);
+      font-family: var(--font-mono);
+      line-height: 1.38;
+      background: transparent;
+      display: none;
+    }
+    .notes strong { color: var(--accent); font-weight: 650; }
+    .slide.dark .notes { border-color: color-mix(in oklch, var(--bg) 18%, transparent); }
+    .deck-counter {
+      position: fixed;
+      bottom: 24px;
+      right: 32px;
+      font-family: var(--font-mono);
+      font-size: 12px;
+      color: var(--fg);
+      background: var(--surface);
+      padding: 6px 12px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      letter-spacing: 0.04em;
+      z-index: 10;
+    }
+    .deck-hint {
+      position: fixed;
+      bottom: 24px;
+      left: 32px;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--muted);
+      letter-spacing: 0.04em;
+      z-index: 10;
+      display: none;
+    }
+    .deck-progress {
+      position: fixed;
+      top: 0;
+      left: 0;
+      height: 3px;
+      background: var(--accent);
+      width: 0;
+      z-index: 10;
+      transition: width 0.18s ease;
+    }
+    .slide > .eyebrow,
+    .slide > .h-hero,
+    .slide > .h-xl,
+    .slide > .h-md,
+    .slide > .lead,
+    .slide > .pt-grid,
+    .slide > .three-col,
+    .slide > .ba-grid,
+    .slide > .pipeline,
+    .slide > .diagram,
+    .slide > .two-col,
+    .slide > .table,
+    .slide > .code,
+    .slide > .stat-num,
+    .slide > .stat-caption,
+    .slide > .icon-chip {
+      animation: slideIn 420ms cubic-bezier(0.2, 0, 0, 1) both;
+    }
+    .slide > :nth-child(2) { animation-delay: 35ms; }
+    .slide > :nth-child(3) { animation-delay: 70ms; }
+    .slide > :nth-child(4) { animation-delay: 105ms; }
+    .slide > :nth-child(5) { animation-delay: 140ms; }
+    @keyframes slideIn {
+      from { opacity: 0; transform: translateY(16px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 1ms !important;
+        transition-duration: 1ms !important;
+        scroll-behavior: auto !important;
+      }
+    }
+    @media print {
+      body { display: block; overflow: visible; }
+      .slide { page-break-after: always; width: 100vw; height: 100vh; }
+      .notes { display: block; }
+      .deck-counter, .deck-hint, .deck-progress { display: none; }
+    }
+  </style>
+</head>
+<body>
+  <svg width="0" height="0" aria-hidden="true" focusable="false" style="position:absolute">
+    <symbol id="i-gateway" viewBox="0 0 24 24"><path d="M4 8h16M7 4h10a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2Z"/><path d="M8 13h3M8 16h8"/></symbol>
+    <symbol id="i-shield" viewBox="0 0 24 24"><path d="M12 3 19 6v5c0 5-3 8-7 10-4-2-7-5-7-10V6l7-3Z"/><path d="m9 12 2 2 4-5"/></symbol>
+    <symbol id="i-loop" viewBox="0 0 24 24"><path d="M17 2v5h-5"/><path d="M7 22v-5h5"/><path d="M19 9a7 7 0 0 0-12-4l-2 2"/><path d="M5 15a7 7 0 0 0 12 4l2-2"/></symbol>
+    <symbol id="i-tool" viewBox="0 0 24 24"><path d="m14 7 3 3-7 7H7v-3l7-7Z"/><path d="M16 5l3 3"/><path d="M5 20h14"/></symbol>
+    <symbol id="i-phone" viewBox="0 0 24 24"><rect x="7" y="2.5" width="10" height="19" rx="2"/><path d="M10 18h4"/></symbol>
+    <symbol id="i-voice" viewBox="0 0 24 24"><path d="M12 4a3 3 0 0 1 3 3v4a3 3 0 0 1-6 0V7a3 3 0 0 1 3-3Z"/><path d="M5 11a7 7 0 0 0 14 0"/><path d="M12 18v3"/></symbol>
+    <symbol id="i-code" viewBox="0 0 24 24"><path d="m8 9-4 3 4 3"/><path d="m16 9 4 3-4 3"/><path d="m14 5-4 14"/></symbol>
+    <symbol id="i-roadmap" viewBox="0 0 24 24"><path d="M5 19c4-6 10 0 14-6"/><path d="M5 19V5"/><path d="M19 13V5"/><path d="M7 7h4"/><path d="M15 7h4"/></symbol>
+  </svg>
+  <section class="slide hero light center" data-screen-label="01 Обложка">
+    <span class="icon-chip"><svg class="icon"><use href="#i-loop"></use></svg></span>
+    <div class="eyebrow">Питер · июль 2026 · 90 минут</div>
+    <h1 class="h-hero">Deep Agents и OpenClaw</h1>
+    <p class="lead">Как устроен агент, который живет в мессенджере, пишет в tools, держит state и останавливается перед опасным действием.</p>
+    <div class="notes"><strong>Заметки:</strong> Сразу задать рамку: это не обзор хайпа, а архитектурный разбор и hands-on сборка своего контролируемого клона.</div>
+  </section>
+
+  <section class="slide light" data-screen-label="02 Тезис">
+    <p class="eyebrow">Главная мысль</p>
+    <h2 class="h-xl">OpenClaw — гениальная форма, но слишком много доверия в первом слое.</h2>
+    <p class="lead">Мы разбираем идею до компонентов: gateway, tools, state, loop, memory, HITL. Затем собираем минимальный клон в notebook, чтобы понимать и контролировать каждый слой.</p>
+    <div class="pt-grid">
+      <div class="pt"><h3><svg class="icon"><use href="#i-phone"></use></svg>Понять</h3><p>Почему async-first агент в телефоне удобнее классического dashboard.</p></div>
+      <div class="pt"><h3><svg class="icon"><use href="#i-shield"></use></svg>Разобрать</h3><p>Где именно ломаются prompt boundary, browser control, skills и marketplace.</p></div>
+      <div class="pt"><h3><svg class="icon"><use href="#i-tool"></use></svg>Собрать</h3><p>Telegram gateway + Deep Agent + connectors + voice pipeline.</p></div>
+    </div>
+    <div class="notes"><strong>Заметки:</strong> Проговорить ожидание: после 90 минут участник уходит не с «картинкой», а с runnable notebooks и шаблоном собственного connector.</div>
+  </section>
+
+  <section class="slide hero dark center" data-screen-label="03 Первая неделя">
+    <span class="icon-chip"><svg class="icon"><use href="#i-shield"></use></svg></span>
+    <div class="stat-num">1<span class="mono"> неделя</span></div>
+    <p class="stat-caption">Prompt injection, browser takeover, вредоносные skills и утечки показали, что agent runtime нельзя принимать как черный ящик.</p>
+    <div class="notes"><strong>Заметки:</strong> Не драматизировать. Смысл слайда: новая поверхность атаки появляется там, где LLM получает tools, browser и чужой контент.</div>
+  </section>
+
+  <section class="slide light" data-screen-label="04 OpenClaw величие и косяки">
+    <p class="eyebrow">Блок 1 · 10 минут</p>
+    <h2 class="h-md">OpenClaw дает правильный UX: написал в телефон — получил результат через минуту.</h2>
+    <div class="ba-grid">
+      <div class="ba-col">
+        <p class="ba-label">Величие</p>
+        <h3><svg class="icon"><use href="#i-gateway"></use></svg>Multi-channel gateway как новый интерфейс к агенту.</h3>
+        <p>WhatsApp, Telegram, iMessage, Signal; async-first запуск; Skills, Canvas, ClawHub, local-first и open source.</p>
+      </div>
+      <div class="ba-col">
+        <p class="ba-label" style="color: var(--accent);">Косяки</p>
+        <h3><svg class="icon"><use href="#i-shield"></use></svg>Первый слой сразу стал security boundary.</h3>
+        <p>Prompt injection, угон через браузер, marketplace-malware, утечки файлов и открытые панели управления.</p>
+      </div>
+    </div>
+    <div class="notes"><strong>Заметки:</strong> Переход: мы не ругаем продуктовую идею. Мы забираем UX-паттерн и строим runtime так, чтобы видеть каждую границу доверия.</div>
+  </section>
+
+  <section class="slide dark" data-screen-label="05 Инциденты">
+    <p class="eyebrow">Risk inventory</p>
+    <h2 class="h-md">Список проблем выглядит разнородно, но корень один: agent acts on untrusted input.</h2>
+    <table class="table">
+      <tr><th>Класс</th><th>Что случилось</th><th>Граница</th></tr>
+      <tr><td class="danger">Prompt injection</td><td>Кража ключей через инструкции в контенте</td><td>LLM context</td></tr>
+      <tr><td class="danger">CVE-2026-25253</td><td>Угон через browser-control поверхность</td><td>Browser tool</td></tr>
+      <tr><td class="danger">ClawHavoc</td><td>1100 вредоносных skills в marketplace</td><td>Skill install</td></tr>
+      <tr><td class="danger">find ~</td><td>Домашняя директория ушла в групповой чат</td><td>Filesystem + channel</td></tr>
+      <tr><td class="danger">Moltbook</td><td>35k email и 1.5M токенов попали наружу</td><td>Memory / logs</td></tr>
+      <tr><td class="danger">43k panels</td><td>Открытые панели управления в сети</td><td>Control plane</td></tr>
+    </table>
+    <div class="notes"><strong>Заметки:</strong> Держать таблицу как threat model. Не спорить о каждом кейсе, а показать типы границ: context, browser, skills, FS, memory, control plane.</div>
+  </section>
+
+  <section class="slide light" data-screen-label="06 Эволюция агентов">
+    <p class="eyebrow">Блок 2 · от LangChain к Deep Agents</p>
+    <h2 class="h-xl">Эволюция: от ответа к действию, затем к длинному циклу с проверкой.</h2>
+    <div class="three-col">
+      <div class="card"><h3><svg class="icon"><use href="#i-code"></use></svg>Chatbot / RAG</h3><p>Отвечает. Читает базу. Не действует во внешнем мире.</p></div>
+      <div class="card"><h3><svg class="icon"><use href="#i-tool"></use></svg>Tool-calling</h3><p>Вызывает API. Может писать в БД. Но нет длинного цикла и самопроверки.</p></div>
+      <div class="card"><h3><svg class="icon"><use href="#i-loop"></use></svg>Deep Agent</h3><p>Планирует и итерирует. Управляет файлами, shell, browser. Стопорится перед опасным действием.</p></div>
+    </div>
+    <pre class="code">Deep Agent = LLM + Tools + State + Loop + Human checkpoint</pre>
+    <div class="notes"><strong>Заметки:</strong> Формулу проговорить как контракт. Если убрать state — будет tool call. Если убрать loop — будет разовый вызов. Если убрать HITL — будет небезопасная автоматизация.</div>
+  </section>
+
+  <section class="slide hero dark center" data-screen-label="07 Claude Code факт">
+    <span class="icon-chip"><svg class="icon"><use href="#i-code"></use></svg></span>
+    <div class="eyebrow">Главный факт</div>
+    <h2 class="h-hero">Claude Code уже Deep Agent.</h2>
+    <p class="lead">Если вы пользовались Claude Code, вы уже работали с агентом, который планирует, вызывает tools, меняет файлы, проверяет себя и просит подтверждение на опасных шагах.</p>
+    <div class="notes"><strong>Заметки:</strong> Связать с личным опытом аудитории. Разница воркшопа: мы залезаем внутрь harness и заменяем connector/runtime под себя.</div>
+  </section>
+
+  <section class="slide light" data-screen-label="08 Deep Agents архитектура">
+    <p class="eyebrow">Deep Agents Architecture</p>
+    <h2 class="h-md">`create_deep_agent(model, tools, ...)` — это не функция-магия, а сборка слоев.</h2>
+    <div class="pipeline">
+      <div class="step"><span class="nb">01</span><h3><svg class="icon"><use href="#i-code"></use></svg>Model</h3><p>LLM, routing, structured calls, stop conditions.</p></div>
+      <div class="step"><span class="nb">02</span><h3><svg class="icon"><use href="#i-tool"></use></svg>Tools</h3><p>Typed adapters: files, shell, browser, APIs, connectors.</p></div>
+      <div class="step"><span class="nb">03</span><h3><svg class="icon"><use href="#i-gateway"></use></svg>State</h3><p>Messages, artifacts, memory, task context, durable traces.</p></div>
+      <div class="step"><span class="nb">04</span><h3><svg class="icon"><use href="#i-loop"></use></svg>Loop + HITL</h3><p>Plan, act, observe, critique, checkpoint before risk.</p></div>
+    </div>
+    <div class="two-col">
+      <pre class="code">LangChain
+  → create_agent()
+  → create_deep_agent()</pre>
+      <p class="lead">Переход от «легко вызвать model + tools» к полному harness: sub-agents, backend, skills, memory, HITL и context management.</p>
+    </div>
+    <div class="notes"><strong>Заметки:</strong> Здесь важно не уходить в реализацию LangGraph слишком глубоко. Слайд нужен как карта слоев перед архитектурой клона.</div>
+  </section>
+
+  <section class="slide dark" data-screen-label="09 Архитектура клона">
+    <p class="eyebrow">Блок 3 · 15 минут</p>
+    <h2 class="h-md">Клон держится на трех узлах: Telegram, Notebook Gateway, Deep Agent.</h2>
+    <div class="diagram flow-3">
+      <div class="node"><span class="tag">channel</span><h3><svg class="icon"><use href="#i-phone"></use></svg>Telegram</h3><p>Text, voice, file_id, sendMessage. Пользовательский интерфейс без нового UI.</p></div>
+      <div class="arrow">↔</div>
+      <div class="node"><span class="tag">gateway</span><h3><svg class="icon"><use href="#i-gateway"></use></svg>Notebook</h3><p>getUpdates → agent.invoke → sendMessage. `.env` с ключами остается рядом с runtime.</p></div>
+      <div class="arrow">↔</div>
+      <div class="node"><span class="tag">runtime</span><h3><svg class="icon"><use href="#i-loop"></use></svg>Deep Agent</h3><p>Tools, skills, memory, checkpoints, connectors.</p></div>
+    </div>
+    <div class="notes"><strong>Заметки:</strong> Показать, что notebook выбран не потому что production-ready, а потому что он прозрачен для обучения: виден event loop и каждый tool call.</div>
+  </section>
+
+  <section class="slide light" data-screen-label="10 Connector pattern">
+    <p class="eyebrow">Connector не меняет runtime</p>
+    <h2 class="h-md">Connector — это `@tool` функция-адаптер, которую агент видит как обычный инструмент.</h2>
+    <pre class="code">@tool
+def send_telegram_message(message: str, dry_run: bool = True) -> str:
+    """Send message via Telegram Bot API."""
+    if dry_run:
+        return json.dumps({"dry_run": True, "payload": {...}})
+    # POST https://api.telegram.org/bot{token}/sendMessage</pre>
+    <div class="pt-grid">
+      <div class="pt"><h3><svg class="icon"><use href="#i-phone"></use></svg>telegram.py</h3><p>sendMessage, getUpdates, getFile, download.</p></div>
+      <div class="pt"><h3><svg class="icon"><use href="#i-tool"></use></svg>demo.py</h3><p>Fake issue tracker для безопасного hands-on.</p></div>
+      <div class="pt"><h3><svg class="icon"><use href="#i-shield"></use></svg>devops.py</h3><p>uptime, df, tail; опасные операции через dry-run / checkpoint.</p></div>
+    </div>
+    <div class="notes"><strong>Заметки:</strong> Подчеркнуть главный паттерн: мы не форкаем agent framework ради Telegram. Мы расширяем tool surface аккуратными адаптерами.</div>
+  </section>
+
+  <section class="slide hero light center" data-screen-label="11 Live demo DevOps">
+    <span class="icon-chip"><svg class="icon"><use href="#i-phone"></use></svg></span>
+    <div class="eyebrow">Блок 4 · live demo · 10 минут</div>
+    <h2 class="h-hero">DevOps из телефона</h2>
+    <p class="lead">Сценарий: `/status` в Telegram → агент вызывает `uptime`, `df -h`, `free -m` → возвращает короткий operational summary.</p>
+    <div class="notes"><strong>Заметки:</strong> Демонстрация должна быть короткой. Цель — показать async UX и tool trace, а не долго читать системные метрики.</div>
+  </section>
+
+  <section class="slide dark" data-screen-label="12 Voice pipeline">
+    <p class="eyebrow">Voice path</p>
+    <h2 class="h-md">Голосовая команда — это тот же агентный loop, только с pre-processing перед intent.</h2>
+    <div class="pipeline">
+      <div class="step"><span class="nb">01</span><h3><svg class="icon"><use href="#i-voice"></use></svg>Telegram voice</h3><p>Получаем `file_id` из update payload.</p></div>
+      <div class="step"><span class="nb">02</span><h3><svg class="icon"><use href="#i-gateway"></use></svg>Download</h3><p>`download_telegram_file(file_id)` сохраняет `/tmp/voice.oga`.</p></div>
+      <div class="step"><span class="nb">03</span><h3><svg class="icon"><use href="#i-code"></use></svg>Transcribe</h3><p>`faster-whisper tiny` возвращает «проверь логи nginx».</p></div>
+      <div class="step"><span class="nb">04</span><h3><svg class="icon"><use href="#i-loop"></use></svg>Act + reply</h3><p>Deep Agent вызывает `tail` и отправляет summary в чат.</p></div>
+    </div>
+    <pre class="code">telegram voice → file_id → /tmp/voice.oga → transcribe_audio()
+→ Deep Agent → tail log → send_telegram_message()</pre>
+    <div class="notes"><strong>Заметки:</strong> На опасном действии остановиться и показать checkpoint: агент должен спросить подтверждение до destructive command, а чтение логов допустимо.</div>
+  </section>
+
+  <section class="slide light" data-screen-label="13 Hands-on notebook">
+    <p class="eyebrow">Блок 5 · 35 минут</p>
+    <h2 class="h-md">Hands-on: собираем OpenClaw-клон в `00_full_interactive_workshop.ipynb`.</h2>
+    <table class="table">
+      <tr><th>Этап</th><th>Что делает участник</th><th>Проверка</th></tr>
+      <tr><td class="mono">0</td><td>git clone, uv sync, `.env`</td><td>Окружение собрано</td></tr>
+      <tr><td class="mono">1</td><td>`call_openrouter` живой запрос</td><td>LLM отвечает</td></tr>
+      <tr><td class="mono">2</td><td>`create_deep_agent()` минимальный граф</td><td>Agent loop стартует</td></tr>
+      <tr><td class="mono">3</td><td>Demo connector: список issues</td><td>Tool call виден</td></tr>
+      <tr><td class="mono">4</td><td>Telegram dry-run: send + getUpdates</td><td>Payload корректный</td></tr>
+      <tr><td class="mono">5</td><td>Voice: `transcribe_audio(demo_voice.oga)`</td><td>WOW-момент</td></tr>
+      <tr><td class="mono">6</td><td>Свой DevOps tool + SWE mode</td><td>`WORKSHOP_STEP=6`</td></tr>
+    </table>
+    <div class="notes"><strong>Заметки:</strong> Если кто-то отстал — pre-cached outputs в notebook. Механика переключения: `agent_workshop_steps.py`, `WORKSHOP_STEP = 1..6`, рестарт.</div>
+  </section>
+
+  <section class="slide dark" data-screen-label="14 Ограничения">
+    <p class="eyebrow">Safety model</p>
+    <h2 class="h-md">Что мы специально ограничиваем в клоне, чтобы он был учебным, а не опасным.</h2>
+    <div class="pt-grid">
+      <div class="pt"><h3><svg class="icon"><use href="#i-tool"></use></svg>Dry-run first</h3><p>Telegram send, DevOps commands и внешние API сначала возвращают payload, а не выполняют действие.</p></div>
+      <div class="pt"><h3><svg class="icon"><use href="#i-shield"></use></svg>HITL checkpoint</h3><p>Файлы, shell, network и credentials требуют явной границы: read-only, confirm, execute.</p></div>
+      <div class="pt"><h3><svg class="icon"><use href="#i-gateway"></use></svg>Local-first secrets</h3><p>`.env` не попадает в чат, memory или logs. Connector не должен сериализовать ключи.</p></div>
+    </div>
+    <div class="two-col">
+      <pre class="code">agent receives content
+→ classifies risk
+→ proposes tool call
+→ waits on human checkpoint
+→ executes or aborts</pre>
+      <p class="lead">Именно эти ограничения превращают OpenClaw-идею из «магии в мессенджере» в управляемый инженерный runtime.</p>
+    </div>
+    <div class="notes"><strong>Заметки:</strong> Этот слайд связывает первую часть про инциденты с практикой. Без ограничений мы просто повторяем те же ошибки в меньшем масштабе.</div>
+  </section>
+
+  <section class="slide hero dark center" data-screen-label="15 Roadmap и Q&A">
+    <span class="icon-chip"><svg class="icon"><use href="#i-roadmap"></use></svg></span>
+    <div class="eyebrow">Блок 6 · 10 минут</div>
+    <h2 class="h-hero">Дальше: gateway как сервис.</h2>
+    <p class="lead">Multi-channel: WhatsApp / Baileys, iMessage `chat.db`, Signal. Затем scheduled tasks, durable memory, проекты, сессии и connector template на `@tool`.</p>
+    <div class="notes"><strong>Заметки:</strong> Закрыть артефактами: репозиторий с клоном и 7 notebooks, Telegram connector с voice transcription, faster-whisper + ffmpeg, шаблон собственного connector.</div>
+  </section>
+
+  <div class="deck-progress" id="deck-progress" aria-hidden="true"></div>
+  <div class="deck-counter" id="deck-counter">1 / 15</div>
+  <div class="deck-hint">← / → · scroll · swipe</div>
+
+  <script>
+    /*
+      Five hard rules for deck nav inside an iframe (the OD preview is one).
+      The naive `document.body.scrollLeft` pattern silently fails: clicks
+      register, but keyboard does nothing, and the counter freezes at "1 / N"
+      while the user is on slide 6.
+
+      1. Detect the real scroller — body OR documentElement, depending.
+      2. Listen for scroll on BOTH window and document, capture phase.
+      3. Listen for keydown on BOTH window and document, capture phase.
+      4. Auto-focus body so arrow keys work without an upfront click.
+      5. Never use the element auto-scroll helper — it can yank the host page.
+    */
+    (function () {
+      var slides   = document.querySelectorAll('.slide');
+      var counter  = document.getElementById('deck-counter');
+      var progress = document.getElementById('deck-progress');
+      var KEY      = 'od-deck-pos';
+      var active   = 0;
+
+      function scrollContainers() {
+        return [document.scrollingElement, document.documentElement, document.body]
+          .filter(Boolean)
+          .filter(function (el, idx, arr) { return arr.indexOf(el) === idx; });
+      }
+      function overflowX(el) {
+        if (!el) return 0;
+        return Math.max(0, (el.scrollWidth || 0) - (el.clientWidth || 0));
+      }
+      function scrollLeftOf(el) {
+        if (!el) return 0;
+        try { return Number(el.scrollLeft) || 0; } catch (_) { return 0; }
+      }
+      function activeScrollLeft() {
+        var candidates = scrollContainers();
+        var best = 0;
+        for (var i = 0; i < candidates.length; i++) {
+          var left = scrollLeftOf(candidates[i]);
+          if (Math.abs(left) > Math.abs(best)) best = left;
+        }
+        return best;
+      }
+      function scroller() {
+        var candidates = scrollContainers();
+        var best = candidates[0] || document.documentElement;
+        var bestScore = -1;
+        for (var i = 0; i < candidates.length; i++) {
+          var el = candidates[i];
+          var score = overflowX(el) + Math.abs(scrollLeftOf(el)) * 2;
+          if (score > bestScore) {
+            best = el;
+            bestScore = score;
+          }
+        }
+        return best;
+      }
+      function scrollToLeft(left, behavior) {
+        var candidates = scrollContainers();
+        for (var i = 0; i < candidates.length; i++) {
+          try { candidates[i].scrollLeft = left; } catch (_) {}
+          try { candidates[i].scrollTo({ left: left, behavior: behavior || 'smooth' }); } catch (_) {}
+        }
+      }
+      function setActive(i) {
+        active = i;
+        if (counter)  counter.textContent  = (i + 1) + ' / ' + slides.length;
+        if (progress) progress.style.width = (((i + 1) / slides.length) * 100) + '%';
+        try { localStorage.setItem(KEY, String(i)); } catch (_) {}
+      }
+      function go(i) {
+        var next = Math.max(0, Math.min(slides.length - 1, i));
+        setActive(next);
+        scrollToLeft(next * window.innerWidth, 'smooth');
+      }
+      function syncFromScroll() {
+        var i = Math.round(activeScrollLeft() / window.innerWidth);
+        if (i !== active && i >= 0 && i < slides.length) setActive(i);
+      }
+      function onKey(e) {
+        if (e.defaultPrevented) return;
+        var t = e.target;
+        if (t && (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA')) return;
+        if      (e.key === 'ArrowRight' || e.key === ' '       || e.key === 'PageDown') { e.preventDefault(); go(active + 1); }
+        else if (e.key === 'ArrowLeft'  || e.key === 'PageUp')                            { e.preventDefault(); go(active - 1); }
+        else if (e.key === 'Home')                                                        { e.preventDefault(); go(0); }
+        else if (e.key === 'End')                                                         { e.preventDefault(); go(slides.length - 1); }
+      }
+
+      window.addEventListener('keydown', onKey, true);
+      document.addEventListener('keydown', onKey, true);
+      document.addEventListener('scroll', syncFromScroll, { passive: true, capture: true });
+      window.addEventListener('scroll', syncFromScroll,   { passive: true });
+
+      document.body.setAttribute('tabindex', '-1');
+      document.body.style.outline = 'none';
+      function focusDeck() { try { window.focus(); document.body.focus({ preventScroll: true }); } catch (_) {} }
+      document.addEventListener('mousedown', focusDeck);
+      window.addEventListener('load', focusDeck);
+      focusDeck();
+
+      try {
+        var saved = parseInt(localStorage.getItem(KEY) || '0', 10);
+        if (!isNaN(saved) && saved >= 0 && saved < slides.length) {
+          setActive(saved);
+          scrollToLeft(saved * window.innerWidth, 'instant');
+        } else {
+          setActive(0);
+        }
+      } catch (_) { setActive(0); }
+    })();
+  </script>
+</body>
+</html>

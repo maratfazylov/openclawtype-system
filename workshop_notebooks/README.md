@@ -11,6 +11,9 @@ Suggested order:
 4. `04_telegram_connector.ipynb` — Telegram connector with safe dry-run.
 5. `05_subagents_skills_memory.ipynb` — subagents, local skills, memory.
 6. `06_swe_mode.ipynb` — stricter SWE graph with write/edit interrupts.
+7. `07_jenkins_connector.ipynb` — Jenkins combat smoke: preview, read job info, real build.
+8. `08_single_notebook_langgraph_project.ipynb` — one notebook as the source
+   of truth, generating a LangGraph runtime and config.
 
 Open any `.ipynb` in VS Code, PyCharm, JupyterLab, or another notebook app and
 select the project virtual environment:
