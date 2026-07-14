@@ -1,39 +1,67 @@
 # OpenClaw Workshop Runbook
 
-## Before Starting
+## Перед началом
 
-1. Check model and connectors:
+1. Проверить модель, credentials и dry-run connectors:
 
    ```bash
    uv run python scripts/preflight_openclaw_workshop.py
    ```
 
-2. For stage 05, verify shell and SWE demo state:
+2. Проверить live read-only доступ к Jenkins/VK:
 
    ```bash
-   OPENCLAW_ENABLE_LOCAL_SHELL=1 uv run python scripts/preflight_openclaw_workshop.py
-   uv run python scripts/reset_swe_demo.py
+   OPENCLAW_PREFLIGHT_LIVE=1 uv run python scripts/preflight_openclaw_workshop.py
    ```
 
-3. Open notebooks:
+3. Подготовить SWE-демо:
+
+   ```bash
+   uv run python scripts/reset_swe_demo.py
+   OPENCLAW_ENABLE_LOCAL_SHELL=1 uv run python scripts/preflight_openclaw_workshop.py
+   ```
+
+4. Открыть notebooks:
 
    ```bash
    uv run jupyter lab workshop_notebooks/openclaw_path
    ```
 
-4. After running stages 01-05, start LangGraph:
+## Порядок live-demo
+
+1. Выполнить notebook `01`.
+2. Проверить, что сгенерированные graph targets существуют:
+
+   ```bash
+   OPENCLAW_PREFLIGHT_REQUIRE_GRAPHS=1 uv run python scripts/preflight_openclaw_workshop.py
+   ```
+
+3. Запустить Studio:
 
    ```bash
    uv run langgraph dev --config langgraph.openclaw_path.json
    ```
 
-5. At stage 03, start the VK bridge in a second terminal:
+4. После каждого следующего notebook дождаться reload в Studio. Если graph не обновился, перезапустить `langgraph dev`.
+5. На stage `03` запустить bridge во втором терминале. Bridge вызывает graph `openclaw_03`:
 
    ```bash
-   VK_BRIDGE_DRY_RUN=0 VK_BRIDGE_REPLY_TO_VK=1 uv run python scripts/vk_langgraph_bridge.py
+   LANGGRAPH_ASSISTANT_ID=openclaw_03 \
+   VK_BRIDGE_DRY_RUN=0 \
+   VK_BRIDGE_REPLY_TO_VK=1 \
+   uv run python scripts/vk_langgraph_bridge.py
    ```
 
-## Stage Prompts
+6. На финале переключить bridge на финальный graph `openclaw_05_swe`:
+
+   ```bash
+   LANGGRAPH_ASSISTANT_ID=openclaw_05_swe \
+   VK_BRIDGE_DRY_RUN=0 \
+   VK_BRIDGE_REPLY_TO_VK=1 \
+   uv run python scripts/vk_langgraph_bridge.py
+   ```
+
+## Prompts
 
 ### 01
 
@@ -43,20 +71,36 @@
 
 ### 02
 
+Read:
+
 ```text
-Сначала проверь Jenkins job и назови статус последней сборки. Затем запусти smoke build с параметром OPENCLAW_SMOKE=true. Это реальный запуск.
+Проверь Jenkins job и назови статус последней сборки.
+```
+
+Write:
+
+```text
+Теперь запусти smoke build с OPENCLAW_SMOKE=true. Это реальный запуск.
 ```
 
 ### 03
+
+Outbound from Studio:
 
 ```text
 Отправь в VK сообщение: «OpenClaw stage 03: outbound connector работает». Это реальная отправка.
 ```
 
-Then from VK:
+Inbound from VK:
 
 ```text
 Коротко объясни, какие инструменты тебе доступны.
+```
+
+End-to-end from VK:
+
+```text
+Проверь последнюю Jenkins-сборку и пришли сюда номер и статус.
 ```
 
 ### 04
@@ -73,14 +117,14 @@ VK connector должен разбивать сообщения длиннее 3
 
 ### 06
 
-From VK:
+Из VK:
 
 ```text
-Проверь последнюю сборку Jenkins и отправь сюда короткий статус с номером и результатом.
+Запусти smoke build и сообщи сюда, принял ли Jenkins запуск.
 ```
 
-## Backup Notes
+## Backup
 
-- Keep a backup model in `.env` and test it before the event.
-- If Jenkins network fails, show dry-run payload and explain network/VPN/firewall dependency.
-- If VK send fails, show `send_vk_message` dry-run and token preflight output.
+- Держать backup model в `.env`.
+- Если Jenkins недоступен, показать dry-run payload и объяснить network/VPN/firewall dependency.
+- Если VK send падает, показать `send_vk_message` dry-run и output preflight.

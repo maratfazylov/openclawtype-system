@@ -46,7 +46,7 @@ def main() -> int:
             warn(f"import {module_name}", str(exc))
             failures += 1
 
-    from connectors.jenkins import trigger_jenkins_job
+    from connectors.jenkins import get_jenkins_job_info, trigger_jenkins_job
     from connectors.vk import get_vk_current_user, send_vk_message
 
     jenkins_preview = trigger_jenkins_job.invoke(
@@ -58,6 +58,8 @@ def main() -> int:
         os.getenv("JENKINS_USERNAME") and os.getenv("JENKINS_API_TOKEN")
     ):
         ok("Jenkins credentials present")
+        if os.getenv("OPENCLAW_PREFLIGHT_LIVE") == "1":
+            print(get_jenkins_job_info.invoke({}))
     else:
         warn("Jenkins credentials missing", "real build will not start")
 
@@ -78,6 +80,10 @@ def main() -> int:
     else:
         warn("VK token missing", "real VK send/bridge will not work")
 
+    failures += not require("VK_PEER_ID set", bool(os.getenv("VK_PEER_ID")), os.getenv("VK_PEER_ID", ""))
+    ok("LANGGRAPH_URL", os.getenv("LANGGRAPH_URL", "http://127.0.0.1:2024"))
+    ok("LANGGRAPH_ASSISTANT_ID", os.getenv("LANGGRAPH_ASSISTANT_ID", "openclaw_03/openclaw_05_swe"))
+
     if os.getenv("OPENCLAW_ENABLE_LOCAL_SHELL") == "1":
         ok("local shell enabled for stage 05")
     else:
@@ -95,6 +101,8 @@ def main() -> int:
                 missing_targets.append(module_path)
         if missing_targets:
             warn("generated agent files missing", ", ".join(missing_targets))
+            if os.getenv("OPENCLAW_PREFLIGHT_REQUIRE_GRAPHS") == "1":
+                failures += 1
     else:
         warn("LangGraph config missing", "run notebooks 01-05 first")
 
