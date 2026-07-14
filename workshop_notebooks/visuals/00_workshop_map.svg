@@ -1,0 +1,54 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1400" height="760" viewBox="0 0 1400 760" role="img" aria-labelledby="title desc">
+  <title id="title">Deep Agents Workshop map</title>
+  <desc id="desc">Roadmap from context and formula to live demo, cookbooks, observability and takeaways.</desc>
+  <defs>
+    <style>
+      .bg{fill:#fffaf1}.ink{fill:#201d19}.muted{fill:#6e655b}.accent{fill:#c04a1a}.teal{fill:#2b8a8a}.line{stroke:#201d19;stroke-width:4;fill:none;stroke-linecap:round;stroke-linejoin:round}.soft{fill:#f7f1e7;stroke:#201d19;stroke-width:3}.warm{fill:#ffe1cf;stroke:#c04a1a;stroke-width:3}.cool{fill:#dff3ef;stroke:#2b8a8a;stroke-width:3}.dark{fill:#15130f}.rev{fill:#fffaf1}.small{font:500 24px Inter,Arial,sans-serif}.body{font:500 30px Inter,Arial,sans-serif}.head{font:800 54px Inter,Arial,sans-serif}.mono{font:700 22px ui-monospace,SFMono-Regular,Menlo,monospace}
+    </style>
+    <marker id="arrow" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto">
+      <path d="M2 2l8 4-8 4z" fill="#201d19"/>
+    </marker>
+  </defs>
+  <rect class="bg" width="1400" height="760" rx="34"/>
+  <text x="72" y="96" class="head ink">Deep Agents → OpenClaw</text>
+  <text x="74" y="142" class="body muted">путь воркшопа: модель → граф → демо → production</text>
+  <path class="line" marker-end="url(#arrow)" d="M184 360h1030"/>
+  <g transform="translate(72 240)">
+    <rect class="soft" width="210" height="170" rx="18"/>
+    <text x="26" y="48" class="mono accent">01</text>
+    <text x="26" y="92" class="body ink">Контекст</text>
+    <text x="26" y="128" class="small muted">чатбот → tools</text>
+  </g>
+  <g transform="translate(314 240)">
+    <rect class="warm" width="210" height="170" rx="18"/>
+    <text x="26" y="48" class="mono accent">02</text>
+    <text x="26" y="92" class="body ink">Формула</text>
+    <text x="26" y="128" class="small muted">LLM + loop + HITL</text>
+  </g>
+  <g transform="translate(556 240)">
+    <rect class="cool" width="210" height="170" rx="18"/>
+    <text x="26" y="48" class="mono teal">03</text>
+    <text x="26" y="92" class="body ink">Граф</text>
+    <text x="26" y="128" class="small muted">state → tools</text>
+  </g>
+  <g transform="translate(798 240)">
+    <rect class="soft" width="210" height="170" rx="18"/>
+    <text x="26" y="48" class="mono accent">04</text>
+    <text x="26" y="92" class="body ink">Демо</text>
+    <text x="26" y="128" class="small muted">успех · HITL · error</text>
+  </g>
+  <g transform="translate(1040 240)">
+    <rect class="dark" width="210" height="170" rx="18"/>
+    <text x="26" y="48" class="mono rev">05</text>
+    <text x="26" y="92" class="body rev">Production</text>
+    <text x="26" y="128" class="small rev">trace · safety · state</text>
+  </g>
+  <g transform="translate(72 502)">
+    <rect class="soft" width="1256" height="150" rx="22"/>
+    <text x="34" y="56" class="body ink">Материалы на выходе</text>
+    <text x="34" y="96" class="small muted">notebooks 01-08 · connectors · SWE mode · LangGraph runtime</text>
+    <text x="34" y="128" class="small muted">готовые prompt-сценарии и безопасные smoke checks</text>
+    <circle cx="1110" cy="74" r="38" class="warm"/>
+    <path d="M1093 75l15 15 32-40" stroke="#c04a1a" stroke-width="8" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+</svg>

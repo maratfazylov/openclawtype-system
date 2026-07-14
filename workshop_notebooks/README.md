@@ -1,19 +1,24 @@
 # OpenClaw Workshop Notebooks
 
-These notebooks mirror `agent_workshop_steps.py`, but each layer is isolated in a runnable Jupyter notebook.
+The canonical workshop path is now `openclaw_path/`: five notebooks that follow
+the presentation story and then build the OpenClaw clone layer by layer.
 
-Suggested order:
+Main order:
 
-0. `00_full_interactive_workshop.ipynb` — one combined notebook with real OpenRouter calls and saved outputs.
-1. `01_minimal_agent.ipynb` — model + prompt + `create_deep_agent`.
-2. `02_filesystem_backend.ipynb` — workspace-scoped backend and shell opt-in.
-3. `03_demo_connector.ipynb` — keyless demo issue connector.
-4. `04_telegram_connector.ipynb` — Telegram connector with safe dry-run.
-5. `05_subagents_skills_memory.ipynb` — subagents, local skills, memory.
-6. `06_swe_mode.ipynb` — stricter SWE graph with write/edit interrupts.
-7. `07_jenkins_connector.ipynb` — Jenkins combat smoke: preview, read job info, real build.
-8. `08_single_notebook_langgraph_project.ipynb` — one notebook as the source
-   of truth, generating a LangGraph runtime and config.
+0. `openclaw_path/00_openclaw_intro.ipynb` — small no-code presentation:
+   OpenClaw's UX, security problems, `messages` API, LangChain → LangGraph →
+   Deep Agents, and what a Deep Agent is.
+1. `openclaw_path/01_minimal_and_filesystem.ipynb` — start from `messages`,
+   create a minimal Deep Agent, then add filesystem backend and shell gate.
+2. `openclaw_path/02_real_jenkins_connector.ipynb` — add real Jenkins:
+   dry-run preview, read-only metadata, and gated build trigger.
+3. `openclaw_path/03_vk_connector_and_bridge.ipynb` — add VK connector and
+   explain the polling/cron bridge into LangGraph.
+4. `openclaw_path/04_subagents_and_swe.ipynb` — add subagents, skills-shaped
+   instructions, and a stricter SWE assistant.
+
+Legacy/reference notebooks still live in this folder. They are useful for
+isolated experiments, but they are no longer the main workshop sequence.
 
 Open any `.ipynb` in VS Code, PyCharm, JupyterLab, or another notebook app and
 select the project virtual environment:
@@ -41,9 +46,8 @@ CLI fallback:
 
 ```bash
 uv sync
-uv run jupyter lab workshop_notebooks
+uv run jupyter lab workshop_notebooks/openclaw_path
 ```
 
-`00_full_interactive_workshop.ipynb` intentionally contains saved outputs from
-real OpenRouter calls. The other notebooks are smaller chapter-by-chapter
-variants for live editing.
+The active notebooks generate `agents/openclaw_path_*.py` and update
+`langgraph.openclaw_path.json` as they progress.

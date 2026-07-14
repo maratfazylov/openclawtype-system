@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1400" height="720" viewBox="0 0 1400 720" role="img" aria-labelledby="title desc">
+  <title id="title">SWE mode resolution loop</title>
+  <desc id="desc">Strict issue-resolution sequence: reproduce, localize, patch, add regression coverage and verify.</desc>
+  <defs><style>.bg{fill:#fffaf1}.ink{fill:#201d19}.muted{fill:#6e655b}.accent{fill:#c04a1a}.box{fill:#f7f1e7;stroke:#201d19;stroke-width:3}.hot{fill:#ffe1cf;stroke:#c04a1a;stroke-width:3}.head{font:800 48px Inter,Arial,sans-serif}.h{font:800 30px Inter,Arial,sans-serif}.p{font:500 23px Inter,Arial,sans-serif}.mono{font:700 21px ui-monospace,SFMono-Regular,Menlo,monospace}.line{stroke:#201d19;stroke-width:5;fill:none;stroke-linecap:round}</style><marker id="a" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto"><path d="M2 2l8 4-8 4z" fill="#201d19"/></marker></defs>
+  <rect class="bg" width="1400" height="720" rx="32"/>
+  <text x="72" y="94" class="head ink">SWE mode: resolution loop</text>
+  <text x="74" y="140" class="p muted">строгая последовательность и interrupt на write/edit</text>
+  <path class="line" marker-end="url(#a)" d="M255 360h135M555 360h135M855 360h135"/>
+  <g transform="translate(72 260)"><rect class="box" width="210" height="200" rx="18"/><text x="28" y="54" class="mono accent">01</text><text x="28" y="104" class="h ink">Repro</text><text x="28" y="145" class="p muted">issue shape</text></g>
+  <g transform="translate(392 260)"><rect class="box" width="210" height="200" rx="18"/><text x="28" y="54" class="mono accent">02</text><text x="28" y="104" class="h ink">Find</text><text x="28" y="145" class="p muted">files</text><text x="28" y="176" class="p muted">tests</text></g>
+  <g transform="translate(692 260)"><rect class="hot" width="180" height="200" rx="18"/><text x="28" y="54" class="mono accent">03</text><text x="28" y="104" class="h ink">Patch</text><text x="28" y="145" class="p muted">root cause</text></g>
+  <g transform="translate(992 260)"><rect class="box" width="300" height="200" rx="18"/><text x="28" y="54" class="mono accent">04-05</text><text x="28" y="104" class="h ink">Tests</text><text x="28" y="145" class="p muted">regression first</text><text x="28" y="176" class="p muted">suite next</text></g>
+</svg>

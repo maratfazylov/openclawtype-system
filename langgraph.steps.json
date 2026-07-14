@@ -1,0 +1,9 @@
+{
+  "dependencies": [
+    ".."
+  ],
+  "graphs": {
+    "openclaw": "./agents/step_01_minimal.py:agent"
+  },
+  "env": ".env"
+}

@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1400" height="720" viewBox="0 0 1400 720" role="img" aria-labelledby="title desc">
+  <title id="title">Agent maturity ladder</title>
+  <desc id="desc">Chatbot, tool-calling and deep agent capability evolution.</desc>
+  <defs><style>.bg{fill:#fffaf1}.card{fill:#f7f1e7;stroke:#201d19;stroke-width:3}.hot{fill:#ffe1cf;stroke:#c04a1a;stroke-width:3}.ink{fill:#201d19}.muted{fill:#6e655b}.accent{fill:#c04a1a}.head{font:800 50px Inter,Arial,sans-serif}.h{font:800 36px Inter,Arial,sans-serif}.p{font:500 25px Inter,Arial,sans-serif}.mono{font:700 22px ui-monospace,SFMono-Regular,Menlo,monospace}.line{stroke:#201d19;stroke-width:5;fill:none;stroke-linecap:round}</style><marker id="a" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto"><path d="M2 2l8 4-8 4z" fill="#201d19"/></marker></defs>
+  <rect class="bg" width="1400" height="720" rx="32"/>
+  <text x="72" y="95" class="head ink">Эволюция: от ответа к действию</text>
+  <text x="74" y="140" class="p muted">каждый слой добавляет больше контроля над действием</text>
+  <path class="line" marker-end="url(#a)" d="M392 378h170M838 378h170"/>
+  <g transform="translate(78 238)"><rect class="card" width="310" height="280" rx="22"/><text x="32" y="58" class="mono accent">01</text><text x="32" y="110" class="h ink">Chatbot / RAG</text><text x="32" y="160" class="p muted">читает контекст</text><text x="32" y="200" class="p muted">отвечает человеку</text><text x="32" y="240" class="p muted">не действует сам</text></g>
+  <g transform="translate(548 238)"><rect class="card" width="310" height="280" rx="22"/><text x="32" y="58" class="mono accent">02</text><text x="32" y="110" class="h ink">Tool-calling</text><text x="32" y="160" class="p muted">вызывает API</text><text x="32" y="200" class="p muted">пишет payload</text><text x="32" y="240" class="p muted">цикл хрупкий</text></g>
+  <g transform="translate(1018 238)"><rect class="hot" width="310" height="280" rx="22"/><text x="32" y="58" class="mono accent">03</text><text x="32" y="110" class="h ink">Deep Agent</text><text x="32" y="160" class="p muted">планирует</text><text x="32" y="200" class="p muted">итерирует</text><text x="32" y="240" class="p muted">стоп перед риском</text></g>
+</svg>

@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1400" height="720" viewBox="0 0 1400 720" role="img" aria-labelledby="title desc">
+  <title id="title">Workspace backend boundary</title>
+  <desc id="desc">Agent access through workspace-scoped filesystem and opt-in shell backend.</desc>
+  <defs><style>.bg{fill:#fffaf1}.ink{fill:#201d19}.muted{fill:#6e655b}.accent{fill:#c04a1a}.teal{fill:#2b8a8a}.box{fill:#f7f1e7;stroke:#201d19;stroke-width:3}.safe{fill:#dff3ef;stroke:#2b8a8a;stroke-width:3}.warn{fill:#ffe1cf;stroke:#c04a1a;stroke-width:3}.head{font:800 48px Inter,Arial,sans-serif}.h{font:800 32px Inter,Arial,sans-serif}.p{font:500 24px Inter,Arial,sans-serif}.mono{font:700 21px ui-monospace,SFMono-Regular,Menlo,monospace}.line{stroke:#201d19;stroke-width:5;fill:none;stroke-linecap:round;stroke-linejoin:round}</style><marker id="a" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto"><path d="M2 2l8 4-8 4z" fill="#201d19"/></marker></defs>
+  <rect class="bg" width="1400" height="720" rx="32"/>
+  <text x="72" y="94" class="head ink">Файловая система внутри границы</text>
+  <text x="74" y="140" class="p muted">backend дает руки; workspace boundary задает безопасность</text>
+  <rect x="82" y="210" width="1236" height="390" rx="30" fill="none" stroke="#c04a1a" stroke-width="5" stroke-dasharray="16 12"/>
+  <text x="110" y="255" class="mono accent">/Users/ken/work/openclaw clone</text>
+  <g transform="translate(150 330)"><rect class="box" width="270" height="150" rx="18"/><text x="32" y="64" class="h ink">LLM Agent</text><text x="32" y="106" class="p muted">plans action</text></g>
+  <path class="line" marker-end="url(#a)" d="M425 405h165"/>
+  <g transform="translate(600 300)"><rect class="safe" width="330" height="210" rx="18"/><text x="30" y="58" class="h ink">File backend</text><text x="30" y="102" class="p muted">read/write files</text><text x="30" y="142" class="p muted">path validation</text><text x="30" y="182" class="p muted">structured result</text></g>
+  <path class="line" marker-end="url(#a)" d="M944 405h72"/>
+  <g transform="translate(1030 300)"><rect class="warn" width="280" height="210" rx="18"/><text x="28" y="58" class="h ink">Shell gate</text><text x="28" y="102" class="p muted">off by default</text><text x="28" y="142" class="mono accent">OPENCLAW_ENABLE_</text><text x="28" y="172" class="mono accent">LOCAL_SHELL=1</text></g>
+</svg>

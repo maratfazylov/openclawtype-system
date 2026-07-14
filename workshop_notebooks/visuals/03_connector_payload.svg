@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1400" height="720" viewBox="0 0 1400 720" role="img" aria-labelledby="title desc">
+  <title id="title">Connector payload flow</title>
+  <desc id="desc">Demo connector returns structured payload that becomes context for the model.</desc>
+  <defs><style>.bg{fill:#fffaf1}.ink{fill:#201d19}.muted{fill:#6e655b}.accent{fill:#c04a1a}.teal{fill:#2b8a8a}.box{fill:#f7f1e7;stroke:#201d19;stroke-width:3}.hot{fill:#ffe1cf;stroke:#c04a1a;stroke-width:3}.cool{fill:#dff3ef;stroke:#2b8a8a;stroke-width:3}.head{font:800 48px Inter,Arial,sans-serif}.h{font:800 32px Inter,Arial,sans-serif}.p{font:500 24px Inter,Arial,sans-serif}.mono{font:700 21px ui-monospace,SFMono-Regular,Menlo,monospace}.line{stroke:#201d19;stroke-width:5;fill:none;stroke-linecap:round}</style><marker id="a" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto"><path d="M2 2l8 4-8 4z" fill="#201d19"/></marker></defs>
+  <rect class="bg" width="1400" height="720" rx="32"/>
+  <text x="72" y="94" class="head ink">Connector pattern: payload → LLM</text>
+  <text x="74" y="140" class="p muted">внешний API превращается в нормализованный контекст</text>
+  <g transform="translate(90 260)"><rect class="box" width="270" height="180" rx="18"/><text x="28" y="62" class="h ink">Issue tool</text><text x="28" y="108" class="mono accent">DEMO-101</text><text x="28" y="146" class="p muted">local demo</text></g>
+  <path class="line" marker-end="url(#a)" d="M374 350h100"/>
+  <g transform="translate(492 230)"><rect class="cool" width="380" height="240" rx="18"/><text x="28" y="58" class="h ink">Payload</text><text x="28" y="104" class="mono teal">{ status, title,</text><text x="28" y="136" class="mono teal">  severity, next }</text><text x="28" y="188" class="p muted">typed context</text></g>
+  <path class="line" marker-end="url(#a)" d="M886 350h100"/>
+  <g transform="translate(1004 260)"><rect class="hot" width="306" height="180" rx="18"/><text x="28" y="62" class="h ink">Model answer</text><text x="28" y="108" class="p muted">prioritize</text><text x="28" y="146" class="p muted">propose next step</text></g>
+</svg>

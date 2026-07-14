@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1400" height="760" viewBox="0 0 1400 760" role="img" aria-labelledby="title desc">
+  <title id="title">OpenClaw security pitfalls</title>
+  <desc id="desc">Security and reliability issues in agent runtimes.</desc>
+  <defs><style>.bg{fill:#fffaf1}.ink{fill:#201d19}.muted{fill:#6e655b}.accent{fill:#c04a1a}.box{fill:#f7f1e7;stroke:#201d19;stroke-width:3}.hot{fill:#ffe1cf;stroke:#c04a1a;stroke-width:3}.head{font:800 52px Inter,Arial,sans-serif}.h{font:800 31px Inter,Arial,sans-serif}.p{font:500 23px Inter,Arial,sans-serif}.mono{font:700 21px ui-monospace,SFMono-Regular,Menlo,monospace}</style></defs>
+  <rect class="bg" width="1400" height="760" rx="32"/>
+  <text x="72" y="92" class="head ink">Косяки: untrusted input</text>
+  <text x="74" y="138" class="p muted">если агент действует сам, входные данные становятся поверхностью атаки</text>
+  <g transform="translate(90 235)"><rect class="hot" width="360" height="180" rx="20"/><text x="30" y="56" class="mono accent">01</text><text x="30" y="100" class="h ink">Prompt injection</text><text x="30" y="140" class="p muted">команда в контенте</text></g>
+  <g transform="translate(520 235)"><rect class="hot" width="360" height="180" rx="20"/><text x="30" y="56" class="mono accent">02</text><text x="30" y="100" class="h ink">Tool misuse</text><text x="30" y="140" class="p muted">опасный вызов без gate</text></g>
+  <g transform="translate(950 235)"><rect class="hot" width="360" height="180" rx="20"/><text x="30" y="56" class="mono accent">03</text><text x="30" y="100" class="h ink">Data leak</text><text x="30" y="140" class="p muted">секрет уходит в ответ</text></g>
+  <g transform="translate(170 505)"><rect class="box" width="1060" height="120" rx="22"/><text x="34" y="52" class="h ink">Вывод для workshop</text><text x="34" y="88" class="p muted">начинаем с messages API, затем добавляем safety на каждом слое</text></g>
+</svg>

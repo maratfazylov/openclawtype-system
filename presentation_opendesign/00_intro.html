@@ -1,0 +1,141 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>00 · Deep Agents → OpenClaw</title>
+  <style>
+    :root {
+      --bg: #fffaf1;
+      --fg: #201d19;
+      --muted: #6e655b;
+      --accent: #c04a1a;
+      --teal: #2b8a8a;
+      --line: rgba(32, 29, 25, 0.16);
+      --sans: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+      --mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: var(--bg);
+      color: var(--fg);
+      font-family: var(--sans);
+      display: grid;
+      place-items: center;
+    }
+    main {
+      width: min(1180px, calc(100vw - 56px));
+      padding: 48px 0;
+    }
+    .topline {
+      display: flex;
+      justify-content: space-between;
+      gap: 24px;
+      border-bottom: 1px solid var(--line);
+      padding-bottom: 18px;
+      margin-bottom: 42px;
+      color: var(--muted);
+      font: 700 13px/1 var(--mono);
+      letter-spacing: 0.03em;
+    }
+    .hero {
+      display: grid;
+      grid-template-columns: minmax(0, 0.88fr) minmax(420px, 1.12fr);
+      gap: 48px;
+      align-items: center;
+    }
+    h1 {
+      margin: 0;
+      font-size: clamp(54px, 7vw, 96px);
+      line-height: 0.98;
+      letter-spacing: 0;
+      max-width: 11ch;
+    }
+    .accent { color: var(--accent); }
+    .lead {
+      margin: 28px 0 0;
+      max-width: 34rem;
+      color: var(--muted);
+      font-size: clamp(20px, 2.4vw, 28px);
+      line-height: 1.36;
+    }
+    .meta {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 14px;
+      margin-top: 42px;
+    }
+    .meta div {
+      border-top: 3px solid var(--teal);
+      padding-top: 14px;
+      color: var(--muted);
+      font-size: 16px;
+      line-height: 1.35;
+    }
+    .meta strong {
+      display: block;
+      color: var(--fg);
+      font-size: 18px;
+      margin-bottom: 4px;
+    }
+    figure {
+      margin: 0;
+      border: 1px solid var(--line);
+      background: #f7f1e7;
+      overflow: hidden;
+      aspect-ratio: 16 / 9;
+      box-shadow: 0 22px 60px rgba(32, 29, 25, 0.12);
+    }
+    figure img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+    .next {
+      margin-top: 42px;
+      padding-top: 18px;
+      border-top: 1px solid var(--line);
+      display: flex;
+      justify-content: space-between;
+      gap: 24px;
+      color: var(--muted);
+      font: 700 13px/1 var(--mono);
+    }
+    a { color: var(--accent); text-decoration-thickness: 2px; text-underline-offset: 4px; }
+    @media (max-width: 900px) {
+      body { place-items: start center; }
+      .hero { grid-template-columns: 1fr; }
+      .meta { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <div class="topline">
+      <span>00 · введение</span>
+      <span>Deep Agents Workshop · СберХаб Петербург</span>
+    </div>
+    <section class="hero" aria-label="Введение в презентацию">
+      <div>
+        <h1>Deep Agents → <span class="accent">OpenClaw</span></h1>
+        <p class="lead">Короткая вводная рамка перед deck: зачем нужен агентный цикл, где появляется контроль человека и почему notebooks остаются главным артефактом воркшопа.</p>
+        <div class="meta">
+          <div><strong>Модель</strong>LLM, tools, state, loop и checkpoint.</div>
+          <div><strong>Демо</strong>реальные connectors, dry-run и SWE mode.</div>
+          <div><strong>Выход</strong>запускаемый LangGraph runtime и кукбуки.</div>
+        </div>
+      </div>
+      <figure>
+        <img src="../workshop_notebooks/visuals/00_intro_hero.png" alt="Иллюстрация Deep Agents to OpenClaw: ноутбук, graph, messenger и approval checkpoint" />
+      </figure>
+    </section>
+    <div class="next">
+      <span>дальше: основной deck</span>
+      <a href="index.html">open index.html</a>
+    </div>
+  </main>
+</body>
+</html>

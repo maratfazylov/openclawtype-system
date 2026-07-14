@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1400" height="760" viewBox="0 0 1400 760" role="img" aria-labelledby="title desc">
+  <title id="title">Final OpenClaw LangGraph stack</title>
+  <desc id="desc">Final notebook architecture with channels, connectors, Deep Agent, backend and observability.</desc>
+  <defs><style>.bg{fill:#fffaf1}.ink{fill:#201d19}.muted{fill:#6e655b}.accent{fill:#c04a1a}.teal{fill:#2b8a8a}.box{fill:#f7f1e7;stroke:#201d19;stroke-width:3}.hot{fill:#ffe1cf;stroke:#c04a1a;stroke-width:3}.cool{fill:#dff3ef;stroke:#2b8a8a;stroke-width:3}.dark{fill:#15130f}.rev{fill:#fffaf1}.head{font:800 48px Inter,Arial,sans-serif}.h{font:800 30px Inter,Arial,sans-serif}.p{font:500 23px Inter,Arial,sans-serif}.mono{font:700 20px ui-monospace,SFMono-Regular,Menlo,monospace}.line{stroke:#201d19;stroke-width:4;fill:none;stroke-linecap:round}</style><marker id="a" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto"><path d="M2 2l8 4-8 4z" fill="#201d19"/></marker></defs>
+  <rect class="bg" width="1400" height="760" rx="32"/>
+  <text x="72" y="94" class="head ink">Notebook → LangGraph runtime</text>
+  <text x="74" y="140" class="p muted">конфиги, connectors и два assistants в одном месте</text>
+  <g transform="translate(78 235)"><rect class="box" width="250" height="110" rx="18"/><text x="28" y="48" class="h ink">Notebook</text><text x="28" y="82" class="p muted">source of truth</text></g>
+  <path class="line" marker-end="url(#a)" d="M340 290h130"/>
+  <g transform="translate(462 215)"><rect class="dark" width="360" height="150" rx="20"/><text x="30" y="62" class="h rev">LangGraph</text><text x="30" y="102" class="p rev">openclaw + SWE</text></g>
+  <path class="line" marker-end="url(#a)" d="M834 290h100"/>
+  <g transform="translate(946 235)"><rect class="cool" width="380" height="110" rx="18"/><text x="28" y="48" class="h ink">Deep Agents UI</text><text x="28" y="82" class="p muted">127.0.0.1:2024</text></g>
+  <g transform="translate(120 470)"><rect class="hot" width="270" height="120" rx="18"/><text x="28" y="52" class="h ink">Connectors</text><text x="28" y="88" class="p muted">demo · tg · CI</text></g>
+  <g transform="translate(430 470)"><rect class="box" width="270" height="120" rx="18"/><text x="28" y="52" class="h ink">Backend</text><text x="28" y="88" class="p muted">files + shell</text></g>
+  <g transform="translate(740 470)"><rect class="box" width="260" height="120" rx="18"/><text x="28" y="52" class="h ink">Skills</text><text x="28" y="88" class="p muted">SWE guardrails</text></g>
+  <g transform="translate(1050 470)"><rect class="cool" width="290" height="120" rx="18"/><text x="28" y="52" class="h ink">Tracing</text><text x="28" y="88" class="p muted">smoke checks</text></g>
+</svg>

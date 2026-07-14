@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1400" height="720" viewBox="0 0 1400 720" role="img" aria-labelledby="title desc">
+  <title id="title">Jenkins connector smoke test</title>
+  <desc id="desc">Jenkins connector preview, metadata and gated real build stages.</desc>
+  <defs><style>.bg{fill:#fffaf1}.ink{fill:#201d19}.muted{fill:#6e655b}.accent{fill:#c04a1a}.teal{fill:#2b8a8a}.box{fill:#f7f1e7;stroke:#201d19;stroke-width:3}.hot{fill:#ffe1cf;stroke:#c04a1a;stroke-width:3}.cool{fill:#dff3ef;stroke:#2b8a8a;stroke-width:3}.head{font:800 48px Inter,Arial,sans-serif}.h{font:800 32px Inter,Arial,sans-serif}.p{font:500 24px Inter,Arial,sans-serif}.mono{font:700 21px ui-monospace,SFMono-Regular,Menlo,monospace}.line{stroke:#201d19;stroke-width:5;fill:none;stroke-linecap:round}</style><marker id="a" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto"><path d="M2 2l8 4-8 4z" fill="#201d19"/></marker></defs>
+  <rect class="bg" width="1400" height="720" rx="32"/>
+  <text x="72" y="94" class="head ink">Jenkins connector: safe smoke</text>
+  <text x="74" y="140" class="p muted">preview, read-only metadata и явно разрешенный build</text>
+  <g transform="translate(92 260)"><rect class="cool" width="320" height="190" rx="18"/><text x="30" y="60" class="h ink">Dry-run</text><text x="30" y="108" class="p muted">URL, job, params</text><text x="30" y="148" class="p muted">никакого запуска</text></g>
+  <path class="line" marker-end="url(#a)" d="M432 355h80"/>
+  <g transform="translate(532 260)"><rect class="box" width="300" height="190" rx="18"/><text x="30" y="60" class="h ink">Live metadata</text><text x="30" y="108" class="p muted">job info</text><text x="30" y="148" class="p muted">last build status</text></g>
+  <path class="line" marker-end="url(#a)" d="M852 355h100"/>
+  <g transform="translate(972 260)"><rect class="hot" width="336" height="190" rx="18"/><text x="30" y="60" class="h ink">Real build gated</text><text x="30" y="108" class="mono accent">OPENCLAW_RUN_REAL_</text><text x="30" y="138" class="mono accent">JENKINS_PIPELINE=1</text></g>
+</svg>
