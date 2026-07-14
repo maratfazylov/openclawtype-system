@@ -1,20 +1,97 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1400" height="820" viewBox="0 0 1400 820" role="img" aria-labelledby="title desc">
   <title id="title">Workshop architecture</title>
-  <desc id="desc">VK polling bridge to LangGraph API, Deep Agent, tools, state and reply back to VK.</desc>
-  <defs><style>.bg{fill:#fffaf1}.ink{fill:#201d19}.muted{fill:#6e655b}.accent{fill:#c04a1a}.teal{fill:#2b8a8a}.box{fill:#f7f1e7;stroke:#201d19;stroke-width:3}.hot{fill:#ffe1cf;stroke:#c04a1a;stroke-width:3}.cool{fill:#dff3ef;stroke:#2b8a8a;stroke-width:3}.dark{fill:#15130f}.rev{fill:#fffaf1}.head{font:800 52px Inter,Arial,sans-serif}.h{font:800 30px Inter,Arial,sans-serif}.p{font:500 23px Inter,Arial,sans-serif}.mono{font:700 20px ui-monospace,SFMono-Regular,Menlo,monospace}.line{stroke:#201d19;stroke-width:4;fill:none;stroke-linecap:round}</style><marker id="a" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto"><path d="M2 2l8 4-8 4z" fill="#201d19"/></marker></defs>
+  <desc id="desc">A clean left-to-right architecture diagram: VK, bridge, LangGraph API, Deep Agent, tools, state, and VK reply.</desc>
+  <defs>
+    <style>
+      .bg{fill:#fffaf1}
+      .ink{fill:#201d19}
+      .muted{fill:#6e655b}
+      .accent{fill:#c04a1a}
+      .box{fill:#f7f1e7;stroke:#201d19;stroke-width:3}
+      .hot{fill:#ffe1cf;stroke:#c04a1a;stroke-width:3}
+      .cool{fill:#dff3ef;stroke:#2b8a8a;stroke-width:3}
+      .dark{fill:#15130f;stroke:#15130f;stroke-width:3}
+      .rev{fill:#fffaf1}
+      .head{font:800 52px Inter,Arial,sans-serif}
+      .h{font:800 29px Inter,Arial,sans-serif}
+      .p{font:500 22px Inter,Arial,sans-serif}
+      .mono{font:700 19px ui-monospace,SFMono-Regular,Menlo,monospace}
+      .line{stroke:#201d19;stroke-width:4;fill:none;stroke-linecap:round;stroke-linejoin:round}
+      .softline{stroke:#6e655b;stroke-width:3;fill:none;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:10 10}
+    </style>
+    <marker id="arrow" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto">
+      <path d="M2 2l8 4-8 4z" fill="#201d19"/>
+    </marker>
+    <marker id="softarrow" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto">
+      <path d="M2 2l8 4-8 4z" fill="#6e655b"/>
+    </marker>
+  </defs>
+
   <rect class="bg" width="1400" height="820" rx="32"/>
   <text x="72" y="92" class="head ink">Workshop-аналог OpenClaw</text>
-  <text x="74" y="138" class="p muted">не копия продукта, а воспроизводимый engineering runtime</text>
-  <g transform="translate(80 220)"><rect class="cool" width="240" height="150" rx="20"/><text x="30" y="58" class="h ink">VK</text><text x="30" y="98" class="p muted">user UI</text></g>
-  <path class="line" marker-end="url(#a)" d="M340 295h95"/>
-  <g transform="translate(455 220)"><rect class="box" width="260" height="150" rx="20"/><text x="30" y="58" class="h ink">Bridge</text><text x="30" y="98" class="p muted">poll + trigger</text></g>
-  <path class="line" marker-end="url(#a)" d="M735 295h95"/>
-  <g transform="translate(850 220)"><rect class="dark" width="300" height="150" rx="20"/><text x="30" y="58" class="h rev">LangGraph</text><text x="30" y="98" class="p rev">thread + run</text></g>
-  <path class="line" marker-end="url(#a)" d="M1000 390v75"/>
-  <g transform="translate(850 485)"><rect class="hot" width="300" height="150" rx="20"/><text x="30" y="58" class="h ink">Deep Agent</text><text x="30" y="98" class="p muted">state + tools</text></g>
-  <g transform="translate(165 560)"><rect class="box" width="240" height="120" rx="18"/><text x="28" y="50" class="h ink">Filesystem</text><text x="28" y="84" class="p muted">repo work</text></g>
-  <g transform="translate(455 560)"><rect class="hot" width="240" height="120" rx="18"/><text x="28" y="50" class="h ink">Jenkins</text><text x="28" y="84" class="p muted">real job</text></g>
-  <g transform="translate(1165 560)"><rect class="cool" width="180" height="120" rx="18"/><text x="28" y="50" class="h ink">Reply</text><text x="28" y="84" class="p muted">to VK</text></g>
-  <path class="line" marker-end="url(#a)" d="M835 560H715"/>
-  <path class="line" marker-end="url(#a)" d="M1150 560h35"/>
+  <text x="74" y="138" class="p muted">канал доставки отдельно, agent runtime отдельно</text>
+
+  <!-- Main request path -->
+  <g transform="translate(72 245)">
+    <rect class="cool" width="215" height="145" rx="20"/>
+    <text x="28" y="56" class="h ink">VK</text>
+    <text x="28" y="92" class="p muted">message</text>
+  </g>
+  <path class="line" marker-end="url(#arrow)" d="M300 318h72"/>
+
+  <g transform="translate(390 245)">
+    <rect class="box" width="245" height="145" rx="20"/>
+    <text x="28" y="56" class="h ink">Bridge</text>
+    <text x="28" y="92" class="p muted">poll + normalize</text>
+  </g>
+  <path class="line" marker-end="url(#arrow)" d="M648 318h72"/>
+
+  <g transform="translate(740 245)">
+    <rect class="dark" width="245" height="145" rx="20"/>
+    <text x="28" y="56" class="h rev">LangGraph</text>
+    <text x="28" y="92" class="p rev">thread + run</text>
+  </g>
+  <path class="line" marker-end="url(#arrow)" d="M998 318h72"/>
+
+  <g transform="translate(1090 245)">
+    <rect class="hot" width="240" height="145" rx="20"/>
+    <text x="28" y="56" class="h ink">Deep Agent</text>
+    <text x="28" y="92" class="p muted">plan + tools</text>
+  </g>
+
+  <!-- Capabilities under the agent -->
+  <path class="line" d="M1210 402v70"/>
+  <path class="line" d="M885 472h445"/>
+  <path class="line" marker-end="url(#arrow)" d="M885 472v20"/>
+  <path class="line" marker-end="url(#arrow)" d="M1115 472v20"/>
+  <path class="line" marker-end="url(#arrow)" d="M1330 472v20"/>
+
+  <g transform="translate(790 505)">
+    <rect class="box" width="190" height="118" rx="18"/>
+    <text x="24" y="48" class="h ink">Files</text>
+    <text x="24" y="80" class="p muted">workspace</text>
+  </g>
+  <g transform="translate(1020 505)">
+    <rect class="hot" width="190" height="118" rx="18"/>
+    <text x="24" y="48" class="h ink">Jenkins</text>
+    <text x="24" y="80" class="p muted">real job</text>
+  </g>
+  <g transform="translate(1235 505)">
+    <rect class="cool" width="115" height="118" rx="18"/>
+    <text x="22" y="48" class="h ink">VK</text>
+    <text x="24" y="80" class="p muted">reply</text>
+  </g>
+
+  <!-- Observability/state lane -->
+  <g transform="translate(390 665)">
+    <rect class="box" width="595" height="82" rx="18"/>
+    <text x="28" y="50" class="h ink">State / trace</text>
+  </g>
+  <path class="softline" marker-end="url(#softarrow)" d="M862 402v245"/>
+  <path class="softline" marker-end="url(#softarrow)" d="M1210 402v245H1002"/>
+
+  <!-- Return path -->
+  <path class="softline" d="M1300 635v80H180"/>
+  <path class="softline" marker-end="url(#softarrow)" d="M180 715V405"/>
+  <text x="72" y="770" class="mono accent">reply path: agent → VK tool → same chat</text>
 </svg>
