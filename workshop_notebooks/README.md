@@ -65,4 +65,18 @@ uv run jupyter lab workshop_notebooks/openclaw_path
 ```
 
 The active notebooks generate `agents/openclaw_path_*.py` and update
-`langgraph.openclaw_path.json` as they progress.
+`langgraph.openclaw_path.json` as they progress. The config is cumulative:
+running later stages keeps earlier graph IDs available in LangGraph Studio.
+
+Preflight before rehearsal or live demo:
+
+```bash
+uv run python scripts/preflight_openclaw_workshop.py
+```
+
+Stage 05 needs local shell for pytest:
+
+```bash
+OPENCLAW_ENABLE_LOCAL_SHELL=1 uv run python scripts/preflight_openclaw_workshop.py
+uv run python scripts/reset_swe_demo.py
+```

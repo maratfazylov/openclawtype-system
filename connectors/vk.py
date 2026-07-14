@@ -182,9 +182,10 @@ def trigger_langgraph_from_vk_message(
     )
 
 
+# Runtime tools exposed to the agent. Inbound bridge helpers stay importable for
+# tests and channel workers, but the agent should not recursively start another
+# LangGraph run from inside its own run.
 VK_TOOLS = [
-    call_vk_api_method,
     get_vk_current_user,
     send_vk_message,
-    trigger_langgraph_from_vk_message,
 ]
