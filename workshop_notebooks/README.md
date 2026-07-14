@@ -5,17 +5,32 @@ the presentation story and then build the OpenClaw clone layer by layer.
 
 Main order:
 
-0. `openclaw_path/00_openclaw_intro.ipynb` — small no-code presentation:
-   OpenClaw's UX, security problems, `messages` API, LangChain → LangGraph →
-   Deep Agents, and what a Deep Agent is.
-1. `openclaw_path/01_minimal_and_filesystem.ipynb` — start from `messages`,
-   create a minimal Deep Agent, then add filesystem backend and shell gate.
-2. `openclaw_path/02_real_jenkins_connector.ipynb` — add real Jenkins:
-   dry-run preview, read-only metadata, and gated build trigger.
-3. `openclaw_path/03_vk_connector_and_bridge.ipynb` — add VK connector and
-   explain the polling/cron bridge into LangGraph.
-4. `openclaw_path/04_subagents_and_swe.ipynb` — add subagents, skills-shaped
-   instructions, and a stricter SWE assistant.
+0. `openclaw_path/00_from_claude_code_to_openclaw.ipynb` — no-code technical
+   lecture: LLM as a function, Claude Code, OpenClaw, security/operations
+   problems, and the workshop promise.
+1. `openclaw_path/01_agent_and_filesystem.ipynb` — first agent: state, tools,
+   filesystem, and the contrast between no workspace and workspace access.
+2. `openclaw_path/02_jenkins_tools.ipynb` — from analysis to action: Jenkins
+   as a controlled Python tool contract.
+3. `openclaw_path/03_vk_channel_and_bridge.ipynb` — VK as outbound capability
+   and inbound transport through the polling bridge.
+4. `openclaw_path/04_subagents.ipynb` — delegation: hierarchical agent with
+   researcher and reviewer roles.
+5. `openclaw_path/05_swe_agent.ipynb` — SWE workflow: issue, research, edit,
+   test, review, summary.
+6. `openclaw_path/06_final_architecture.ipynb` — final architecture, primitive
+   map, what exists, and what is intentionally out of scope.
+
+Each chapter follows the same rhythm:
+
+```text
+What the agent cannot do yet
+→ capability added
+→ primitives involved
+→ code assembly
+→ LangGraph Studio check
+→ new limitation
+```
 
 Legacy/reference notebooks still live in this folder. They are useful for
 isolated experiments, but they are no longer the main workshop sequence.

@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1400" height="820" viewBox="0 0 1400 820" role="img" aria-labelledby="title desc">
+  <title id="title">Final architecture map</title>
+  <desc id="desc">Final workshop architecture and implemented primitives.</desc>
+  <defs><style>.bg{fill:#fffaf1}.ink{fill:#201d19}.muted{fill:#6e655b}.accent{fill:#c04a1a}.teal{fill:#2b8a8a}.box{fill:#f7f1e7;stroke:#201d19;stroke-width:3}.hot{fill:#ffe1cf;stroke:#c04a1a;stroke-width:3}.cool{fill:#dff3ef;stroke:#2b8a8a;stroke-width:3}.dark{fill:#15130f}.rev{fill:#fffaf1}.head{font:800 52px Inter,Arial,sans-serif}.h{font:800 29px Inter,Arial,sans-serif}.p{font:500 22px Inter,Arial,sans-serif}.mono{font:700 19px ui-monospace,SFMono-Regular,Menlo,monospace}.line{stroke:#201d19;stroke-width:4;fill:none;stroke-linecap:round}</style><marker id="a" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto"><path d="M2 2l8 4-8 4z" fill="#201d19"/></marker></defs>
+  <rect class="bg" width="1400" height="820" rx="32"/>
+  <text x="72" y="92" class="head ink">Что мы построили</text>
+  <text x="74" y="138" class="p muted">минимальный messenger-first engineering agent</text>
+  <g transform="translate(90 245)"><rect class="cool" width="230" height="120" rx="18"/><text x="28" y="50" class="h ink">VK</text><text x="28" y="84" class="p muted">channel</text></g>
+  <path class="line" marker-end="url(#a)" d="M340 305h70"/>
+  <g transform="translate(430 245)"><rect class="box" width="250" height="120" rx="18"/><text x="28" y="50" class="h ink">Bridge</text><text x="28" y="84" class="p muted">adapter</text></g>
+  <path class="line" marker-end="url(#a)" d="M700 305h70"/>
+  <g transform="translate(790 245)"><rect class="dark" width="260" height="120" rx="18"/><text x="28" y="50" class="h rev">LangGraph</text><text x="28" y="84" class="p rev">state + trace</text></g>
+  <path class="line" marker-end="url(#a)" d="M1070 305h70"/>
+  <g transform="translate(1160 245)"><rect class="hot" width="170" height="120" rx="18"/><text x="28" y="50" class="h ink">Agent</text><text x="28" y="84" class="p muted">loop</text></g>
+  <g transform="translate(170 510)"><rect class="box" width="220" height="110" rx="18"/><text x="24" y="47" class="h ink">Workspace</text><text x="24" y="80" class="p muted">files/shell</text></g>
+  <g transform="translate(440 510)"><rect class="hot" width="220" height="110" rx="18"/><text x="24" y="47" class="h ink">Jenkins</text><text x="24" y="80" class="p muted">actions</text></g>
+  <g transform="translate(710 510)"><rect class="cool" width="220" height="110" rx="18"/><text x="24" y="47" class="h ink">Subagents</text><text x="24" y="80" class="p muted">roles</text></g>
+  <g transform="translate(980 510)"><rect class="box" width="250" height="110" rx="18"/><text x="24" y="47" class="h ink">Validation</text><text x="24" y="80" class="p muted">tests/review</text></g>
+</svg>

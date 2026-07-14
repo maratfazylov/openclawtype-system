@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1400" height="820" viewBox="0 0 1400 820" role="img" aria-labelledby="title desc">
+  <title id="title">SWE agent cycle</title>
+  <desc id="desc">Issue resolution loop from task to patch, tests, review and summary.</desc>
+  <defs><style>.bg{fill:#fffaf1}.ink{fill:#201d19}.muted{fill:#6e655b}.accent{fill:#c04a1a}.teal{fill:#2b8a8a}.box{fill:#f7f1e7;stroke:#201d19;stroke-width:3}.hot{fill:#ffe1cf;stroke:#c04a1a;stroke-width:3}.cool{fill:#dff3ef;stroke:#2b8a8a;stroke-width:3}.head{font:800 52px Inter,Arial,sans-serif}.h{font:800 28px Inter,Arial,sans-serif}.p{font:500 22px Inter,Arial,sans-serif}.mono{font:700 20px ui-monospace,SFMono-Regular,Menlo,monospace}.line{stroke:#201d19;stroke-width:4;fill:none;stroke-linecap:round}</style><marker id="a" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto"><path d="M2 2l8 4-8 4z" fill="#201d19"/></marker></defs>
+  <rect class="bg" width="1400" height="820" rx="32"/>
+  <text x="72" y="92" class="head ink">SWE agent: замкнутый цикл</text>
+  <text x="74" y="138" class="p muted">полезен не patch сам по себе, а проверенное изменение</text>
+  <path class="line" marker-end="url(#a)" d="M245 385h115M520 385h115M795 385h115M1070 385h95"/>
+  <g transform="translate(72 285)"><rect class="box" width="180" height="200" rx="18"/><text x="26" y="52" class="mono accent">01</text><text x="26" y="96" class="h ink">Issue</text><text x="26" y="132" class="p muted">clear task</text></g>
+  <g transform="translate(360 285)"><rect class="cool" width="200" height="200" rx="18"/><text x="26" y="52" class="mono teal">02</text><text x="26" y="96" class="h ink">Research</text><text x="26" y="132" class="p muted">files</text></g>
+  <g transform="translate(635 285)"><rect class="hot" width="180" height="200" rx="18"/><text x="26" y="52" class="mono accent">03</text><text x="26" y="96" class="h ink">Edit</text><text x="26" y="132" class="p muted">root cause</text></g>
+  <g transform="translate(910 285)"><rect class="cool" width="180" height="200" rx="18"/><text x="26" y="52" class="mono teal">04</text><text x="26" y="96" class="h ink">Test</text><text x="26" y="132" class="p muted">pytest</text></g>
+  <g transform="translate(1165 285)"><rect class="box" width="180" height="200" rx="18"/><text x="26" y="52" class="mono accent">05</text><text x="26" y="96" class="h ink">Review</text><text x="26" y="132" class="p muted">summary</text></g>
+  <g transform="translate(210 615)"><rect class="box" width="980" height="92" rx="20"/><text x="34" y="42" class="h ink">Demo defect</text><text x="34" y="74" class="p muted">VK connector splits messages longer than 3500 chars and tests it</text></g>
+</svg>

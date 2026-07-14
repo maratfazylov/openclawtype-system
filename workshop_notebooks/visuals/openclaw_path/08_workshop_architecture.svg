@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1400" height="820" viewBox="0 0 1400 820" role="img" aria-labelledby="title desc">
+  <title id="title">Workshop architecture</title>
+  <desc id="desc">VK polling bridge to LangGraph API, Deep Agent, tools, state and reply back to VK.</desc>
+  <defs><style>.bg{fill:#fffaf1}.ink{fill:#201d19}.muted{fill:#6e655b}.accent{fill:#c04a1a}.teal{fill:#2b8a8a}.box{fill:#f7f1e7;stroke:#201d19;stroke-width:3}.hot{fill:#ffe1cf;stroke:#c04a1a;stroke-width:3}.cool{fill:#dff3ef;stroke:#2b8a8a;stroke-width:3}.dark{fill:#15130f}.rev{fill:#fffaf1}.head{font:800 52px Inter,Arial,sans-serif}.h{font:800 30px Inter,Arial,sans-serif}.p{font:500 23px Inter,Arial,sans-serif}.mono{font:700 20px ui-monospace,SFMono-Regular,Menlo,monospace}.line{stroke:#201d19;stroke-width:4;fill:none;stroke-linecap:round}</style><marker id="a" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto"><path d="M2 2l8 4-8 4z" fill="#201d19"/></marker></defs>
+  <rect class="bg" width="1400" height="820" rx="32"/>
+  <text x="72" y="92" class="head ink">Workshop-аналог OpenClaw</text>
+  <text x="74" y="138" class="p muted">не копия продукта, а воспроизводимый engineering runtime</text>
+  <g transform="translate(80 220)"><rect class="cool" width="240" height="150" rx="20"/><text x="30" y="58" class="h ink">VK</text><text x="30" y="98" class="p muted">user UI</text></g>
+  <path class="line" marker-end="url(#a)" d="M340 295h95"/>
+  <g transform="translate(455 220)"><rect class="box" width="260" height="150" rx="20"/><text x="30" y="58" class="h ink">Bridge</text><text x="30" y="98" class="p muted">poll + trigger</text></g>
+  <path class="line" marker-end="url(#a)" d="M735 295h95"/>
+  <g transform="translate(850 220)"><rect class="dark" width="300" height="150" rx="20"/><text x="30" y="58" class="h rev">LangGraph</text><text x="30" y="98" class="p rev">thread + run</text></g>
+  <path class="line" marker-end="url(#a)" d="M1000 390v75"/>
+  <g transform="translate(850 485)"><rect class="hot" width="300" height="150" rx="20"/><text x="30" y="58" class="h ink">Deep Agent</text><text x="30" y="98" class="p muted">state + tools</text></g>
+  <g transform="translate(165 560)"><rect class="box" width="240" height="120" rx="18"/><text x="28" y="50" class="h ink">Filesystem</text><text x="28" y="84" class="p muted">repo work</text></g>
+  <g transform="translate(455 560)"><rect class="hot" width="240" height="120" rx="18"/><text x="28" y="50" class="h ink">Jenkins</text><text x="28" y="84" class="p muted">real job</text></g>
+  <g transform="translate(1165 560)"><rect class="cool" width="180" height="120" rx="18"/><text x="28" y="50" class="h ink">Reply</text><text x="28" y="84" class="p muted">to VK</text></g>
+  <path class="line" marker-end="url(#a)" d="M835 560H715"/>
+  <path class="line" marker-end="url(#a)" d="M1150 560h35"/>
+</svg>

@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1400" height="820" viewBox="0 0 1400 820" role="img" aria-labelledby="title desc">
+  <title id="title">Subagents delegation</title>
+  <desc id="desc">Main agent delegates research and review to specialized subagents.</desc>
+  <defs><style>.bg{fill:#fffaf1}.ink{fill:#201d19}.muted{fill:#6e655b}.accent{fill:#c04a1a}.teal{fill:#2b8a8a}.box{fill:#f7f1e7;stroke:#201d19;stroke-width:3}.hot{fill:#ffe1cf;stroke:#c04a1a;stroke-width:3}.cool{fill:#dff3ef;stroke:#2b8a8a;stroke-width:3}.dark{fill:#15130f}.rev{fill:#fffaf1}.head{font:800 52px Inter,Arial,sans-serif}.h{font:800 30px Inter,Arial,sans-serif}.p{font:500 23px Inter,Arial,sans-serif}.mono{font:700 20px ui-monospace,SFMono-Regular,Menlo,monospace}.line{stroke:#201d19;stroke-width:4;fill:none;stroke-linecap:round}</style><marker id="a" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto"><path d="M2 2l8 4-8 4z" fill="#201d19"/></marker></defs>
+  <rect class="bg" width="1400" height="820" rx="32"/>
+  <text x="72" y="92" class="head ink">Делегирование без магии</text>
+  <text x="74" y="138" class="p muted">subagent отделяет контекст, специализацию и ответственность</text>
+  <g transform="translate(535 265)"><rect class="dark" width="330" height="200" rx="24"/><text x="34" y="70" class="h rev">Main agent</text><text x="34" y="114" class="p rev">holds goal</text><text x="34" y="150" class="p rev">routes work</text></g>
+  <path class="line" marker-end="url(#a)" d="M535 330H385"/>
+  <path class="line" marker-end="url(#a)" d="M535 420H385"/>
+  <path class="line" marker-end="url(#a)" d="M865 375h150"/>
+  <g transform="translate(95 255)"><rect class="cool" width="290" height="150" rx="20"/><text x="30" y="58" class="h ink">Researcher</text><text x="30" y="100" class="p muted">read/search only</text></g>
+  <g transform="translate(95 455)"><rect class="hot" width="290" height="150" rx="20"/><text x="30" y="58" class="h ink">Reviewer</text><text x="30" y="100" class="p muted">checks claims</text></g>
+  <g transform="translate(1015 305)"><rect class="box" width="300" height="150" rx="20"/><text x="30" y="58" class="h ink">Final answer</text><text x="30" y="100" class="p muted">compact result</text></g>
+  <g transform="translate(255 645)"><rect class="box" width="890" height="112" rx="20"/><text x="34" y="48" class="h ink">Иерархический агент</text><text x="34" y="86" class="p muted">не широкая multi-agent сеть</text></g>
+</svg>
