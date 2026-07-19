@@ -24,11 +24,6 @@ Main order:
 6. `openclaw_path/06_final_architecture.ipynb` — final architecture, primitive
    map, what exists, and what is intentionally out of scope.
 
-`01_agent_and_filesystem.ipynb`, `02_jenkins_tools.ipynb`,
-`03_vk_channel_and_bridge.ipynb`, and `04_subagents.ipynb` are older workshop
-drafts. Keep them as reference material, but use the numbered Core/Workspace
-path above for the live flow.
-
 Each chapter follows the same rhythm:
 
 ```text
