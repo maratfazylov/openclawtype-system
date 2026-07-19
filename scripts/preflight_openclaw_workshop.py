@@ -82,7 +82,10 @@ def main() -> int:
 
     failures += not require("VK_PEER_ID set", bool(os.getenv("VK_PEER_ID")), os.getenv("VK_PEER_ID", ""))
     ok("LANGGRAPH_URL", os.getenv("LANGGRAPH_URL", "http://127.0.0.1:2024"))
-    ok("LANGGRAPH_ASSISTANT_ID", os.getenv("LANGGRAPH_ASSISTANT_ID", "openclaw_03/openclaw_05_swe"))
+    ok(
+        "LANGGRAPH_ASSISTANT_ID",
+        os.getenv("LANGGRAPH_ASSISTANT_ID", "openclaw_04_vk_bridge/openclaw_05_swe"),
+    )
 
     if os.getenv("OPENCLAW_ENABLE_LOCAL_SHELL") == "1":
         ok("local shell enabled for stage 05")

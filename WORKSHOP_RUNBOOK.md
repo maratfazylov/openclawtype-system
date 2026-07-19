@@ -29,30 +29,31 @@
 
 ## Порядок live-demo
 
-1. Выполнить notebook `01`.
-2. Проверить, что сгенерированные graph targets существуют:
+1. Выполнить notebook `01_core_deep_agent.ipynb`.
+2. Выполнить notebook `02_workspace_filesystem.ipynb`.
+3. Проверить, что сгенерированные graph targets существуют:
 
    ```bash
    OPENCLAW_PREFLIGHT_REQUIRE_GRAPHS=1 uv run python scripts/preflight_openclaw_workshop.py
    ```
 
-3. Запустить Studio:
+4. Запустить Studio:
 
    ```bash
    uv run langgraph dev --config langgraph.openclaw_path.json
    ```
 
-4. После каждого следующего notebook дождаться reload в Studio. Если graph не обновился, перезапустить `langgraph dev`.
-5. На stage `03` запустить bridge во втором терминале. Bridge вызывает graph `openclaw_03`:
+5. После каждого следующего notebook дождаться reload в Studio. Если graph не обновился, перезапустить `langgraph dev`.
+6. На stage `04` запустить bridge во втором терминале. Bridge вызывает graph `openclaw_04_vk_bridge`:
 
    ```bash
-   LANGGRAPH_ASSISTANT_ID=openclaw_03 \
+   LANGGRAPH_ASSISTANT_ID=openclaw_04_vk_bridge \
    VK_BRIDGE_DRY_RUN=0 \
    VK_BRIDGE_REPLY_TO_VK=1 \
    uv run python scripts/vk_langgraph_bridge.py
    ```
 
-6. На финале переключить bridge на финальный graph `openclaw_05_swe`:
+7. На финале переключить bridge на финальный graph `openclaw_05_swe`:
 
    ```bash
    LANGGRAPH_ASSISTANT_ID=openclaw_05_swe \
@@ -63,18 +64,24 @@
 
 ## Prompts
 
-### 01
+### 01 Core
 
 ```text
 Найди файл pyproject.toml и назови имя проекта и три зависимости. Если у тебя нет доступа к файлам, прямо скажи об этом.
 ```
 
-### 02
+### 02 Workspace
+
+```text
+Найди файл pyproject.toml и назови имя проекта и три зависимости. Не угадывай: сначала используй filesystem tools.
+```
+
+### 03 Jenkins
 
 Read:
 
 ```text
-Проверь Jenkins job и назови статус последней сборки.
+Проверь Jenkins job и назови статус последней сборки. Используй Jenkins tools, не shell/curl/env.
 ```
 
 Write:
@@ -83,12 +90,18 @@ Write:
 Теперь запусти smoke build с OPENCLAW_SMOKE=true. Это реальный запуск.
 ```
 
-### 03
+Copy:
+
+```text
+Скопируй Jenkins job test01 в папке marat в новую job test02. Это реальное действие, используй dry_run=false.
+```
+
+### 04 VK Bridge
 
 Outbound from Studio:
 
 ```text
-Отправь в VK сообщение: «OpenClaw stage 03: outbound connector работает». Это реальная отправка.
+Отправь в VK сообщение: «OpenClaw stage 04: outbound connector работает». Это реальная отправка.
 ```
 
 Inbound from VK:
@@ -100,22 +113,16 @@ Inbound from VK:
 End-to-end from VK:
 
 ```text
-Проверь последнюю Jenkins-сборку и пришли сюда номер и статус.
+Проверь последнюю Jenkins-сборку через Jenkins tools. Не используй shell, curl или env. Пришли сюда номер job, имя job и статус.
 ```
 
-### 04
-
-```text
-Поручи repo-researcher проследить два потока: 1) Jenkins trigger от tool call до HTTP request; 2) VK message от Long Poll до LangGraph и обратно. Для каждого укажи конкретные файлы и точки отказа. Затем попроси analysis-reviewer проверить фактическую точность отчёта.
-```
-
-### 05
+### 05 SWE Loop
 
 ```text
 VK connector должен разбивать сообщения длиннее 3500 символов на несколько частей. Реализуй acceptance criteria из notebook и добавь unit tests без реального VK API.
 ```
 
-### 06
+### 06 Final
 
 Из VK:
 

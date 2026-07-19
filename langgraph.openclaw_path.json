@@ -3,11 +3,10 @@
     "."
   ],
   "graphs": {
-    "openclaw_01": "./agents/openclaw_01_agent_and_filesystem.py:agent",
-    "openclaw_01_fs": "./agents/openclaw_01_agent_and_filesystem.py:agent_with_filesystem",
-    "openclaw_02": "./agents/openclaw_02_jenkins_tools.py:agent",
-    "openclaw_03": "./agents/openclaw_03_vk_channel_and_bridge.py:agent",
-    "openclaw_04": "./agents/openclaw_04_subagents.py:agent",
+    "openclaw_01_core": "./agents/openclaw_01_core.py:agent",
+    "openclaw_02_workspace": "./agents/openclaw_02_workspace.py:agent",
+    "openclaw_03_jenkins": "./agents/openclaw_03_jenkins_tools.py:agent",
+    "openclaw_04_vk_bridge": "./agents/openclaw_04_vk_bridge.py:agent",
     "openclaw_05_swe": "./agents/openclaw_05_swe_agent.py:swe_agent"
   },
   "env": ".env"
