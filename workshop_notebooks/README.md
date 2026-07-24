@@ -67,6 +67,13 @@ uv sync
 uv run jupyter lab workshop_notebooks/openclaw_path
 ```
 
+Model routing:
+
+```text
+OMNIROUTE_API_KEY set   → http://127.0.0.1:20128/v1, model=auto
+OMNIROUTE_API_KEY empty → openrouter:tencent/hy3:free
+```
+
 The active notebooks generate `agents/openclaw_*.py` and update
 `langgraph.openclaw_path.json` as they progress. The config is cumulative:
 running later stages keeps earlier graph IDs available in LangGraph Studio.

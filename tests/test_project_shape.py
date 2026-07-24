@@ -2,6 +2,12 @@ import ast
 import json
 from pathlib import Path
 
+from agents.model_config import (
+    DEFAULT_FALLBACK_MODEL,
+    OMNIROUTE_BASE_URL,
+    model_label,
+    omniroute_enabled,
+)
 from connectors.demo import get_demo_issue, list_demo_issues
 from connectors.jenkins import (
     JENKINS_TOOL_NOTES,
@@ -10,7 +16,12 @@ from connectors.jenkins import (
     trigger_jenkins_job,
 )
 from connectors.telegram import send_telegram_message
-from connectors.vk import VK_BRIDGE_HELPER_NOTES, VK_TOOL_NOTES, send_vk_message, trigger_langgraph_from_vk_message
+from connectors.vk import (
+    VK_BRIDGE_HELPER_NOTES,
+    VK_TOOL_NOTES,
+    send_vk_message,
+    trigger_langgraph_from_vk_message,
+)
 
 
 def test_langgraph_config_exposes_expected_assistants() -> None:
@@ -37,6 +48,18 @@ def test_workshop_agent_is_split_into_uncommentable_steps() -> None:
     assert "OPENCLAW_WORKSHOP_STEP" in source
     assert "OPENCLAW_ENABLE_LOCAL_SHELL" in source
     assert "CONNECTOR_TOOLS" in source
+
+
+def test_workshop_model_config_switches_to_omniroute(monkeypatch) -> None:
+    monkeypatch.delenv("OMNIROUTE_API_KEY", raising=False)
+
+    assert not omniroute_enabled()
+    assert model_label() == DEFAULT_FALLBACK_MODEL
+
+    monkeypatch.setenv("OMNIROUTE_API_KEY", "test-key")
+
+    assert omniroute_enabled()
+    assert model_label() == f"omniroute:auto ({OMNIROUTE_BASE_URL})"
 
 
 def test_workshop_notebooks_are_present_and_valid() -> None:

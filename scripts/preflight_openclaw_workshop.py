@@ -14,7 +14,8 @@ ROOT = Path(__file__).resolve().parents[1]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
-DEFAULT_MODEL = "openrouter:tencent/hy3:free"
+from agents.model_config import model_label
+
 DEFAULT_LANGGRAPH_URL = "http://127.0.0.1:2024"
 DEFAULT_BRIDGE_ASSISTANT_ID = "openclaw_04_vk_bridge"
 DEFAULT_VK_DRY_RUN_PEER_ID = "123"
@@ -41,7 +42,7 @@ def main() -> int:
     failures = 0
 
     failures += not require("pyproject.toml found", (ROOT / "pyproject.toml").exists(), str(ROOT))
-    ok("model default", DEFAULT_MODEL)
+    ok("model", model_label())
 
     for module_name in ("deepagents", "langgraph_sdk", "connectors.jenkins", "connectors.vk"):
         try:

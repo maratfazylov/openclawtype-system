@@ -3,10 +3,10 @@ from __future__ import annotations
 from pathlib import Path
 from deepagents import create_deep_agent
 from dotenv import load_dotenv
+from agents.model_config import workshop_model
 from connectors.jenkins import JENKINS_TOOLS
 from connectors.vk import VK_TOOLS
 
-DEFAULT_MODEL = "openrouter:tencent/hy3:free"
 REPO_ROOT = Path(__file__).resolve().parents[1]
 
 load_dotenv(REPO_ROOT / ".env")
@@ -42,7 +42,7 @@ Follow this issue-resolution loop:
 6. Before delegating to patch-reviewer, run git diff for changed files and include the diff and test results in the reviewer task.
 """
 swe_agent = create_deep_agent(
-    model=DEFAULT_MODEL,
+    model=workshop_model(),
     tools=TOOLS,
     system_prompt=SWE_PROMPT,
     subagents=SUBAGENTS,

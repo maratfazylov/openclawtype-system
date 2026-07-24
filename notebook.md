@@ -28,6 +28,34 @@ uv run jupyter lab workshop_notebooks/openclaw_path
 OpenClaw Workshop (.venv)
 ```
 
+## 1.1. Модель
+
+По умолчанию stages используют fallback:
+
+```text
+openrouter:tencent/hy3:free
+```
+
+Если хочешь прогонять workshop через OmniRoute, сначала запусти OmniRoute
+отдельным процессом, затем добавь ключ в `.env`:
+
+```dotenv
+OMNIROUTE_API_KEY=...
+```
+
+После этого entrypoints автоматически используют OpenAI-compatible endpoint:
+
+```text
+http://127.0.0.1:20128/v1
+model=auto
+```
+
+Проверить выбранный provider:
+
+```bash
+uv run python scripts/preflight_openclaw_workshop.py
+```
+
 ## 2. Как устроен запуск
 
 Notebooks генерируют Python entrypoints в `agents/` и регистрируют graph IDs в:

@@ -5,8 +5,8 @@ from pathlib import Path
 from deepagents import create_deep_agent
 from dotenv import load_dotenv
 
+from agents.model_config import workshop_model
 
-DEFAULT_MODEL = "openrouter:tencent/hy3:free"
 REPO_ROOT = Path(__file__).resolve().parents[1]
 
 load_dotenv(REPO_ROOT / ".env")
@@ -39,7 +39,7 @@ Important boundary:
 
 
 agent = create_deep_agent(
-    model=DEFAULT_MODEL,
+    model=workshop_model(),
     tools=[],
     system_prompt=WORKSPACE_PROMPT,
     backend=_backend(),

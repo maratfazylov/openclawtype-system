@@ -5,11 +5,11 @@ from pathlib import Path
 from deepagents import create_deep_agent
 from dotenv import load_dotenv
 
+from agents.model_config import workshop_model
 from connectors.jenkins import JENKINS_TOOLS
 from connectors.vk import VK_TOOLS
 
 
-DEFAULT_MODEL = "openrouter:tencent/hy3:free"
 REPO_ROOT = Path(__file__).resolve().parents[1]
 
 load_dotenv(REPO_ROOT / ".env")
@@ -46,7 +46,7 @@ real VK send, call send_vk_message with dry_run=False.
 
 
 agent = create_deep_agent(
-    model=DEFAULT_MODEL,
+    model=workshop_model(),
     tools=[*JENKINS_TOOLS, *VK_TOOLS],
     system_prompt=VK_BRIDGE_PROMPT,
     backend=_backend(),

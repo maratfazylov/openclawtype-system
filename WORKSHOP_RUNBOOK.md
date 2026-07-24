@@ -2,26 +2,40 @@
 
 ## Перед началом
 
-1. Проверить модель, credentials и dry-run connectors:
+1. Если используешь OmniRoute как model gateway, запустить его отдельно и
+   положить ключ endpoint в `.env`:
+
+   ```dotenv
+   OMNIROUTE_API_KEY=...
+   ```
+
+   Workshop автоматически переключится на:
+
+   ```text
+   http://127.0.0.1:20128/v1
+   model=auto
+   ```
+
+2. Проверить модель, credentials и dry-run connectors:
 
    ```bash
    uv run python scripts/preflight_openclaw_workshop.py
    ```
 
-2. Проверить live read-only доступ к Jenkins/VK:
+3. Проверить live read-only доступ к Jenkins/VK:
 
    ```bash
    OPENCLAW_PREFLIGHT_LIVE=1 uv run python scripts/preflight_openclaw_workshop.py
    ```
 
-3. Подготовить SWE-демо:
+4. Подготовить SWE-демо:
 
    ```bash
    uv run python scripts/reset_swe_demo.py
    uv run python scripts/preflight_openclaw_workshop.py
    ```
 
-4. Открыть notebooks:
+5. Открыть notebooks:
 
    ```bash
    uv run jupyter lab workshop_notebooks/openclaw_path
@@ -132,6 +146,7 @@ VK connector должен разбивать сообщения длиннее 3
 
 ## Backup
 
-- Держать backup model в `.env`.
+- Если OmniRoute недоступен, убрать `OMNIROUTE_API_KEY` из `.env`: stages
+  вернутся к OpenRouter fallback.
 - Если Jenkins недоступен, показать dry-run payload и объяснить network/VPN/firewall dependency.
 - Если VK send падает, показать `send_vk_message` dry-run и output preflight.

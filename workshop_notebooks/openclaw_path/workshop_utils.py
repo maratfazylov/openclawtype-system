@@ -5,6 +5,7 @@ import sys
 from pathlib import Path
 
 from dotenv import load_dotenv
+from agents.model_config import model_label
 
 
 def find_repo_root(start: Path | None = None) -> Path:
@@ -22,13 +23,12 @@ if str(REPO_ROOT) not in sys.path:
 
 load_dotenv(REPO_ROOT / ".env")
 
-DEFAULT_MODEL = "openrouter:tencent/hy3:free"
 CONFIG_PATH = REPO_ROOT / "langgraph.openclaw_path.json"
 LOCAL_SHELL_ENABLED = True
 
 
 def model_name() -> str:
-    return DEFAULT_MODEL
+    return model_label()
 
 
 def workspace_root() -> Path:
