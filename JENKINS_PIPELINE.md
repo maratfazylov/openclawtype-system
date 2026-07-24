@@ -69,34 +69,29 @@ the commands with the environment manager used by that Jenkins installation.
 
 ## Environment Variables For OpenClaw
 
-Set these locally in `.env` before running the notebook:
+Set credentials locally in `.env` before running the notebook:
 
 ```bash
-JENKINS_JOB_URL=https://your-jenkins.example/job/openclaw-smoke/
 JENKINS_JOB_TOKEN=...
-OPENCLAW_RUN_REAL_JENKINS_PIPELINE=1
 ```
 
-Keep `OPENCLAW_RUN_REAL_JENKINS_PIPELINE=0` until the dry-run and job metadata
-checks pass. The connector can validate local configuration without network
-access, but real metadata/build calls require the machine to reach the Jenkins
-portal over HTTPS.
+The workshop Jenkins URL is fixed in `connectors/jenkins.py`. Keep tool calls
+in `dry_run=True` until the dry-run and job metadata checks pass. Real
+metadata/build calls require the machine to reach the Jenkins portal over HTTPS.
 
 Or use API credentials instead of a job token:
 
 ```bash
 JENKINS_USERNAME=...
 JENKINS_API_TOKEN=...
-OPENCLAW_RUN_REAL_JENKINS_PIPELINE=1
 ```
 
 ## Demo Flow
 
 1. Run notebook cells through the dry-run preview.
 2. Read job metadata.
-3. Set `OPENCLAW_RUN_REAL_JENKINS_PIPELINE=1`.
-4. Trigger the real pipeline.
-5. Wait for queue resolution and final build status.
+3. Trigger the real pipeline with `dry_run=false`.
+4. Wait for queue resolution and final build status.
 
 ## Network Check
 

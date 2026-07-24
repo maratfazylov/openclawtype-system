@@ -166,12 +166,10 @@ Use the Telegram connector in dry-run mode. Prepare a short workshop message
 that says OpenClaw connectors are working.
 ```
 
-To send real Telegram messages, create a bot with BotFather, get a chat id, and
-set:
+To send real Telegram messages, create a bot with BotFather and set the token:
 
 ```bash
 TELEGRAM_BOT_TOKEN=...
-TELEGRAM_CHAT_ID=...
 ```
 
 Then ask the agent to call `send_telegram_message` with `dry_run=false`.
@@ -183,10 +181,10 @@ Use the Jenkins connector. Check the configured job info, then trigger a real
 smoke build for the marat job with OPENCLAW_SMOKE=true.
 ```
 
-The default job URL is:
+The workshop Jenkins URL is fixed in code:
 
 ```bash
-JENKINS_JOB_URL=https://devops.brojs.ru/job/marat/
+https://devops.brojs.ru/job/marat/
 ```
 
 To trigger builds, configure either a job token:
@@ -221,11 +219,10 @@ Use the VK connector in dry-run mode. Prepare a message payload for peer_id 123
 that says OpenClaw VK connector is configured.
 ```
 
-Configure the token and API version in `.env`:
+Configure only the token in `.env`; VK API version is fixed in code:
 
 ```bash
 VK_ACCESS_TOKEN=...
-VK_API_VERSION=5.199
 ```
 
 Use `get_vk_current_user` to verify the token. Keep `send_vk_message` in
@@ -282,16 +279,9 @@ ffmpeg -y -f concat -safe 0 -i concat.txt -c copy final.mp4
 
 ## Shell Mode
 
-By default, the agent does not get local shell execution. To experiment with a
-Claude Code/OpenClaw-like local coding loop, set:
-
-```bash
-OPENCLAW_ENABLE_LOCAL_SHELL=1
-OPENCLAW_WORKSPACE=/absolute/path/to/a/safe/test/repo
-```
-
-Only enable this in a disposable or trusted workspace. Deep Agents' local shell
-backend executes commands directly on your machine.
+The workshop path keeps `.env` for keys and credentials only. Workspace and
+backend choices are fixed in the stage entrypoints: stages 01-04 use the repo
+workspace, and stage 05 uses `LocalShellBackend` because it must run tests.
 
 ## Useful References
 

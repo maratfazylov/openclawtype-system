@@ -16,16 +16,19 @@ HOW IT WORKS
     2. Skips already-seen messages (tracked in a local JSON state file)
     3. Calls ``trigger_langgraph_run()`` which creates a LangGraph thread and run
     4. Optionally waits for the agent output and sends it back to VK
-    5. Repeats every ``VK_BRIDGE_POLL_SECONDS`` (default 5)
+    5. Repeats every poll interval (default 5 seconds)
 
-ENVIRONMENT (``.env``)
+CONFIGURATION
+    ``.env`` stores only credentials such as ``VK_ACCESS_TOKEN``. Runtime mode
+    can be overridden per process with environment variables in the launch
+    command, for example ``VK_BRIDGE_DRY_RUN=0``.
+
     ============================= =========== ==================================
     Var                           Default     Description
     ============================= =========== ==================================
     VK_ACCESS_TOKEN               —           VK API token (user or group)
-    VK_API_VERSION                5.199       VK API version
     LANGGRAPH_URL                 local:2024  LangGraph server URL
-    LANGGRAPH_ASSISTANT_ID        —           Assistant name (e.g. openclaw)
+    LANGGRAPH_ASSISTANT_ID        stage 04    Assistant graph id
     VK_BRIDGE_DRY_RUN             1           Preview only, no real runs
     VK_BRIDGE_REPLY_TO_VK         0           Send agent output back to VK
     VK_BRIDGE_WAIT_FOR_RUN        1           Wait for agent to finish
@@ -38,7 +41,7 @@ ENVIRONMENT (``.env``)
 RUN
     Start LangGraph first::
 
-        uv run langgraph dev --config langgraph.notebook.json
+        uv run langgraph dev --config langgraph.openclaw_path.json
 
     Run once in dry-run mode::
 

@@ -14,6 +14,11 @@ ROOT = Path(__file__).resolve().parents[1]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
+DEFAULT_MODEL = "openrouter:tencent/hy3:free"
+DEFAULT_LANGGRAPH_URL = "http://127.0.0.1:2024"
+DEFAULT_BRIDGE_ASSISTANT_ID = "openclaw_04_vk_bridge"
+DEFAULT_VK_DRY_RUN_PEER_ID = "123"
+
 
 def ok(label: str, detail: str = "") -> None:
     print(f"✓ {label}{': ' + detail if detail else ''}")
@@ -36,7 +41,7 @@ def main() -> int:
     failures = 0
 
     failures += not require("pyproject.toml found", (ROOT / "pyproject.toml").exists(), str(ROOT))
-    failures += not require("OPENCLAW_MODEL set", bool(os.getenv("OPENCLAW_MODEL")), os.getenv("OPENCLAW_MODEL", ""))
+    ok("model default", DEFAULT_MODEL)
 
     for module_name in ("deepagents", "langgraph_sdk", "connectors.jenkins", "connectors.vk"):
         try:
@@ -65,7 +70,7 @@ def main() -> int:
 
     vk_preview = send_vk_message.invoke(
         {
-            "peer_id": os.getenv("VK_PEER_ID", "123"),
+            "peer_id": DEFAULT_VK_DRY_RUN_PEER_ID,
             "message": "OpenClaw workshop preflight",
             "random_id": 42,
             "dry_run": True,
@@ -80,17 +85,14 @@ def main() -> int:
     else:
         warn("VK token missing", "real VK send/bridge will not work")
 
-    failures += not require("VK_PEER_ID set", bool(os.getenv("VK_PEER_ID")), os.getenv("VK_PEER_ID", ""))
-    ok("LANGGRAPH_URL", os.getenv("LANGGRAPH_URL", "http://127.0.0.1:2024"))
+    ok("VK dry-run peer", DEFAULT_VK_DRY_RUN_PEER_ID)
+    ok("LANGGRAPH_URL", os.getenv("LANGGRAPH_URL", DEFAULT_LANGGRAPH_URL))
     ok(
         "LANGGRAPH_ASSISTANT_ID",
-        os.getenv("LANGGRAPH_ASSISTANT_ID", "openclaw_04_vk_bridge/openclaw_05_swe"),
+        os.getenv("LANGGRAPH_ASSISTANT_ID", DEFAULT_BRIDGE_ASSISTANT_ID),
     )
 
-    if os.getenv("OPENCLAW_ENABLE_LOCAL_SHELL") == "1":
-        ok("local shell enabled for stage 05")
-    else:
-        warn("local shell disabled", "stage 05 cannot run pytest")
+    ok("stage 05 shell", "enabled in agents/openclaw_05_swe_agent.py")
 
     config = ROOT / "langgraph.openclaw_path.json"
     if config.exists():

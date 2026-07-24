@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import json
-import os
 import sys
 from pathlib import Path
 
@@ -25,14 +24,15 @@ load_dotenv(REPO_ROOT / ".env")
 
 DEFAULT_MODEL = "openrouter:tencent/hy3:free"
 CONFIG_PATH = REPO_ROOT / "langgraph.openclaw_path.json"
+LOCAL_SHELL_ENABLED = True
 
 
 def model_name() -> str:
-    return os.getenv("OPENCLAW_MODEL", DEFAULT_MODEL)
+    return DEFAULT_MODEL
 
 
 def workspace_root() -> Path:
-    return Path(os.getenv("OPENCLAW_WORKSPACE", str(REPO_ROOT))).expanduser().resolve()
+    return REPO_ROOT
 
 
 def write_text(path: str, content: str) -> Path:
@@ -62,7 +62,4 @@ def print_stage_context(*, require_shell: bool = False) -> None:
     print(f"Repo root: {REPO_ROOT}")
     print(f"Agent workspace: {workspace_root()}")
     print(f"Model: {model_name()}")
-    shell_enabled = os.getenv("OPENCLAW_ENABLE_LOCAL_SHELL") == "1"
-    print(f"Local shell enabled: {shell_enabled}")
-    if require_shell and not shell_enabled:
-        raise RuntimeError("This stage requires OPENCLAW_ENABLE_LOCAL_SHELL=1 for pytest")
+    print(f"Local shell enabled: {LOCAL_SHELL_ENABLED}")

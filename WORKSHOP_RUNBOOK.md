@@ -18,7 +18,7 @@
 
    ```bash
    uv run python scripts/reset_swe_demo.py
-   OPENCLAW_ENABLE_LOCAL_SHELL=1 uv run python scripts/preflight_openclaw_workshop.py
+   uv run python scripts/preflight_openclaw_workshop.py
    ```
 
 4. Открыть notebooks:

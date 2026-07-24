@@ -133,20 +133,14 @@ OPENCLAW_PREFLIGHT_LIVE=1 uv run python scripts/preflight_openclaw_workshop.py
 
 ## 6. Stage 05
 
-`05_swe_agent.ipynb` требует shell для запуска pytest.
+`05_swe_agent.ipynb` использует `LocalShellBackend` прямо в graph entrypoint,
+потому что этот этап должен запускать pytest.
 
 Перед stage 05:
 
 ```bash
-OPENCLAW_ENABLE_LOCAL_SHELL=1 uv run python scripts/preflight_openclaw_workshop.py
+uv run python scripts/preflight_openclaw_workshop.py
 uv run python scripts/reset_swe_demo.py
-```
-
-Если запускаешь LangGraph с финальным `openclaw_05_swe`, лучше тоже явно
-включить shell:
-
-```bash
-OPENCLAW_ENABLE_LOCAL_SHELL=1 uv run langgraph dev --config langgraph.openclaw_path.json
 ```
 
 ## 7. VK bridge

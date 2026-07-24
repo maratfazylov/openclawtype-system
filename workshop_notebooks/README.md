@@ -77,9 +77,9 @@ Preflight before rehearsal or live demo:
 uv run python scripts/preflight_openclaw_workshop.py
 ```
 
-Stage 05 needs local shell for pytest:
+Stage 05 uses `LocalShellBackend` in its graph entrypoint so it can run pytest:
 
 ```bash
-OPENCLAW_ENABLE_LOCAL_SHELL=1 uv run python scripts/preflight_openclaw_workshop.py
+uv run python scripts/preflight_openclaw_workshop.py
 uv run python scripts/reset_swe_demo.py
 ```

@@ -35,7 +35,7 @@ def _env(name: str) -> str | None:
 
 
 def _job_url(job_url: str | None = None) -> str:
-    return (job_url or _env("JENKINS_JOB_URL") or DEFAULT_JENKINS_JOB_URL).rstrip("/") + "/"
+    return (job_url or DEFAULT_JENKINS_JOB_URL).rstrip("/") + "/"
 
 
 def _job_token() -> str | None:
@@ -189,7 +189,7 @@ def trigger_jenkins_job(
     """Trigger the configured Jenkins job, or preview the request when dry_run is true.
 
     Args:
-        job_url: Jenkins job URL. If omitted, JENKINS_JOB_URL is used.
+        job_url: Jenkins job URL. If omitted, the workshop Jenkins job URL is used.
         parameters: Optional build parameters. When present, buildWithParameters is used.
         dry_run: When true, return the prepared request without starting a build.
             Defaults to false for the test Jenkins environment.
@@ -257,7 +257,7 @@ def get_jenkins_job_config(job_url: str | None = None) -> str:
     """Read config.xml for a Jenkins job.
 
     Args:
-        job_url: Jenkins job URL. If omitted and JENKINS_JOB_URL points to a
+        job_url: Jenkins job URL. If omitted and the workshop Jenkins URL points to a
             folder with exactly one buildable child job, that child is selected.
     """
     resolved_job_url = _job_url(job_url)
@@ -296,7 +296,7 @@ def copy_jenkins_job(
 
     Args:
         new_job_name: Name of the new Jenkins job, for example test02.
-        source_job_url: Source Jenkins job URL. If omitted and JENKINS_JOB_URL
+        source_job_url: Source Jenkins job URL. If omitted and the workshop Jenkins URL
             points to a folder with exactly one buildable child job, that child is selected.
         folder_url: Destination folder URL. If omitted, the source job parent folder is used.
         dry_run: When true, preview the createItem request without creating the job.
@@ -373,7 +373,7 @@ def create_jenkins_job_from_config(
     Args:
         new_job_name: Name of the new Jenkins job.
         config_xml: Jenkins config.xml payload.
-        folder_url: Destination folder URL. If omitted, JENKINS_JOB_URL is used
+        folder_url: Destination folder URL. If omitted, the workshop Jenkins URL is used
             when it is a folder.
         dry_run: When true, preview the createItem request without creating the job.
     """

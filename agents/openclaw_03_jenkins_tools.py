@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import os
 from pathlib import Path
 
 from deepagents import create_deep_agent
@@ -16,25 +15,13 @@ load_dotenv(REPO_ROOT / ".env")
 
 
 def _workspace_root() -> Path:
-    return Path(os.getenv("OPENCLAW_WORKSPACE", str(REPO_ROOT))).expanduser().resolve()
+    return REPO_ROOT
 
 
 def _backend():
-    root = _workspace_root()
-    if os.getenv("OPENCLAW_ENABLE_LOCAL_SHELL") == "1":
-        from deepagents.backends import LocalShellBackend
-
-        return LocalShellBackend(
-            root_dir=root,
-            virtual_mode=True,
-            inherit_env=False,
-            timeout=120,
-            max_output_bytes=80_000,
-        )
-
     from deepagents.backends import FilesystemBackend
 
-    return FilesystemBackend(root_dir=root, virtual_mode=True)
+    return FilesystemBackend(root_dir=_workspace_root(), virtual_mode=True)
 
 
 JENKINS_PROMPT = """\
@@ -60,7 +47,7 @@ Return normalized operational summaries, not raw dumps.
 
 
 agent = create_deep_agent(
-    model=os.getenv("OPENCLAW_MODEL", DEFAULT_MODEL),
+    model=DEFAULT_MODEL,
     tools=JENKINS_TOOLS,
     system_prompt=JENKINS_PROMPT,
     backend=_backend(),

@@ -32,7 +32,7 @@ def _access_token() -> str | None:
 
 
 def _api_version() -> str:
-    return _env("VK_API_VERSION") or DEFAULT_VK_API_VERSION
+    return DEFAULT_VK_API_VERSION
 
 
 def _json(data: dict[str, Any]) -> str:

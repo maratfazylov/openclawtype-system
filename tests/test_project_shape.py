@@ -149,7 +149,7 @@ def test_vk_connector_can_preview_langgraph_trigger() -> None:
     )
 
     assert '"dry_run": true' in result
-    assert "openclaw_notebook" in result
+    assert "openclaw_04_vk_bridge" in result
     assert "OpenClaw VK bridge demo." in result
     assert '\\"source\\": \\"vk\\"' in result
 

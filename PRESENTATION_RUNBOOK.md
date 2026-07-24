@@ -112,8 +112,8 @@ Show me the request that would be sent.
 ## Known Prototype Boundaries
 
 - The repo does not contain a custom frontend; it expects Deep Agents UI.
-- The default backend is filesystem-only and virtualized; shell commands need
-  `OPENCLAW_ENABLE_LOCAL_SHELL=1`.
+- The workshop `.env` stores keys and credentials only; backend choices are
+  fixed in the stage entrypoints.
 - Connectors are intentionally thin examples, not full production integrations.
 - The project demonstrates orchestration and guardrails more than benchmarked
   coding performance.

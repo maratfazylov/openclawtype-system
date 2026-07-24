@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import os
 from pathlib import Path
 
 from deepagents import create_deep_agent
@@ -31,7 +30,7 @@ Core graph cannot inspect the real repository or call external APIs yet. Do not 
 
 
 agent = create_deep_agent(
-    model=os.getenv("OPENCLAW_MODEL", DEFAULT_MODEL),
+    model=DEFAULT_MODEL,
     tools=[],
     system_prompt=CORE_PROMPT,
 )

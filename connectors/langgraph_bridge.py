@@ -10,7 +10,7 @@ from langgraph_sdk import get_sync_client
 
 
 DEFAULT_LANGGRAPH_URL = "http://127.0.0.1:2024"
-DEFAULT_ASSISTANT_ID = "openclaw_notebook"
+DEFAULT_ASSISTANT_ID = "openclaw_04_vk_bridge"
 
 
 def _env(name: str) -> str | None:
