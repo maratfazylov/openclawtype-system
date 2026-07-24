@@ -62,11 +62,16 @@ from __future__ import annotations
 
 import json
 import os
+import sys
 import time
 from pathlib import Path
 from typing import Any
 
 from dotenv import load_dotenv
+
+ROOT = Path(__file__).resolve().parents[1]
+if str(ROOT) not in sys.path:
+    sys.path.insert(0, str(ROOT))
 
 from connectors.langgraph_bridge import trigger_langgraph_run
 from connectors.vk import call_vk_api_method, send_vk_message
