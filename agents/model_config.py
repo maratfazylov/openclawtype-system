@@ -32,6 +32,7 @@ def workshop_model():
             model=OMNIROUTE_MODEL,
             api_key=api_key,
             base_url=OMNIROUTE_BASE_URL,
+            disable_streaming=True,
             temperature=0,
         )
     return DEFAULT_FALLBACK_MODEL
