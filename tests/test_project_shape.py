@@ -12,6 +12,8 @@ from connectors.demo import get_demo_issue, list_demo_issues
 from connectors.jenkins import (
     JENKINS_TOOL_NOTES,
     JENKINS_TOOLS,
+    _build_url,
+    _job_url,
     copy_jenkins_job,
     trigger_jenkins_job,
 )
@@ -125,12 +127,22 @@ def test_jenkins_tools_include_job_management_tools() -> None:
 
     assert "get_jenkins_job_info" in tool_names
     assert "trigger_jenkins_job" in tool_names
+    assert "get_jenkins_queue_item" in tool_names
+    assert "get_jenkins_build_info" in tool_names
     assert "get_jenkins_job_config" in tool_names
     assert "copy_jenkins_job" in tool_names
     assert "create_jenkins_job_from_config" in tool_names
 
     note_names = {note["name"] for note in JENKINS_TOOL_NOTES}
     assert tool_names == note_names
+
+
+def test_jenkins_short_job_name_resolves_inside_workshop_folder() -> None:
+    assert _job_url("test01") == "https://devops.brojs.ru/job/marat/job/test01/"
+
+
+def test_jenkins_build_info_uses_short_job_name() -> None:
+    assert _build_url("test01", 3) == "https://devops.brojs.ru/job/marat/job/test01/3/"
 
 
 def test_jenkins_copy_job_dry_run_builds_copy_request() -> None:

@@ -40,6 +40,10 @@ Explain the boundary clearly:
 Separate read actions from write actions.
 Read tools can inspect job metadata and config.
 Write tools can trigger builds, copy jobs, and create jobs from config.xml.
+After triggering a build, treat queue_url as the source of truth for the new
+run. Use get_jenkins_queue_item and, when it exposes an executable build
+number, get_jenkins_build_info. Do not present lastSuccessfulBuild as the
+newly triggered build unless the queue/build tools confirm it.
 If the user explicitly asks for a real Jenkins mutation, call the matching
 Jenkins tool with dry_run=False.
 Return normalized operational summaries, not raw dumps.

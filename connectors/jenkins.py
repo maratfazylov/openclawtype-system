@@ -35,7 +35,19 @@ def _env(name: str) -> str | None:
 
 
 def _job_url(job_url: str | None = None) -> str:
-    return (job_url or DEFAULT_JENKINS_JOB_URL).rstrip("/") + "/"
+    if not job_url:
+        return DEFAULT_JENKINS_JOB_URL.rstrip("/") + "/"
+    value = job_url.strip()
+    parsed = urlparse(value)
+    if parsed.scheme and parsed.netloc:
+        return value.rstrip("/") + "/"
+    if "/" not in value:
+        return urljoin(DEFAULT_JENKINS_JOB_URL, f"job/{quote(value)}/")
+    return value.rstrip("/") + "/"
+
+
+def _build_url(job_url: str, build_number: int | str) -> str:
+    return urljoin(_job_url(job_url), f"{build_number}/")
 
 
 def _job_token() -> str | None:
@@ -144,7 +156,12 @@ def _require_auth() -> tuple[bool, str | None]:
 # HTTP errors, and normalized JSON output.
 @tool
 def get_jenkins_job_info(job_url: str | None = None) -> str:
-    """Read metadata for the configured Jenkins job or folder."""
+    """Read metadata for the configured Jenkins job or folder.
+
+    Args:
+        job_url: Full Jenkins job URL, short child job name such as test01, or
+            omitted for the workshop folder.
+    """
     resolved_job_url = _job_url(job_url)
     api_url = urljoin(resolved_job_url, "api/json")
     params = {
@@ -180,6 +197,90 @@ def get_jenkins_job_info(job_url: str | None = None) -> str:
             "is_folder": isinstance(payload.get("jobs"), list),
             "job_count": len(payload.get("jobs", [])) if isinstance(payload.get("jobs"), list) else None,
             "job": payload,
+        }
+    )
+
+
+@tool
+def get_jenkins_queue_item(queue_url: str) -> str:
+    """Read a Jenkins queue item returned by trigger_jenkins_job.
+
+    Use this after a trigger response with queue_url to learn whether Jenkins
+    assigned an executable build number and build URL.
+
+    Args:
+        queue_url: Jenkins queue item URL, for example
+            https://devops.brojs.ru/queue/item/560536/.
+    """
+    resolved_queue_url = queue_url.rstrip("/") + "/"
+    api_url = urljoin(resolved_queue_url, "api/json")
+    auth = _auth()
+
+    try:
+        response = httpx.get(api_url, auth=auth, timeout=JENKINS_TIMEOUT)
+        response.raise_for_status()
+    except httpx.HTTPError as exc:
+        return _json(
+            {
+                "ok": False,
+                "queue_url": resolved_queue_url,
+                "uses_basic_auth": bool(auth),
+                "error": str(exc),
+            }
+        )
+
+    payload = response.json()
+    executable = payload.get("executable")
+    return _json(
+        {
+            "ok": True,
+            "queue_url": resolved_queue_url,
+            "uses_basic_auth": bool(auth),
+            "queued": executable is None,
+            "why": payload.get("why"),
+            "cancelled": payload.get("cancelled"),
+            "executable": executable,
+            "item": payload,
+        }
+    )
+
+
+@tool
+def get_jenkins_build_info(job_url: str, build_number: int) -> str:
+    """Read metadata for a concrete Jenkins build.
+
+    Args:
+        job_url: Full Jenkins job URL or short child job name such as test01.
+        build_number: Jenkins build number to inspect.
+    """
+    resolved_build_url = _build_url(job_url, build_number)
+    api_url = urljoin(resolved_build_url, "api/json")
+    auth = _auth()
+
+    try:
+        response = httpx.get(api_url, auth=auth, timeout=JENKINS_TIMEOUT)
+        response.raise_for_status()
+    except httpx.HTTPError as exc:
+        return _json(
+            {
+                "ok": False,
+                "build_url": resolved_build_url,
+                "uses_basic_auth": bool(auth),
+                "error": str(exc),
+            }
+        )
+
+    payload = response.json()
+    return _json(
+        {
+            "ok": True,
+            "build_url": resolved_build_url,
+            "uses_basic_auth": bool(auth),
+            "building": payload.get("building"),
+            "result": payload.get("result"),
+            "duration": payload.get("duration"),
+            "timestamp": payload.get("timestamp"),
+            "build": payload,
         }
     )
 
@@ -459,6 +560,18 @@ JENKINS_TOOL_NOTES = [
         "python_does": "POST build/buildWithParameters with token/basic auth/crumbs",
     },
     {
+        "name": "get_jenkins_queue_item",
+        "kind": "read",
+        "model_sees": "queue_url",
+        "python_does": "GET queue item api/json and returns executable build metadata when assigned",
+    },
+    {
+        "name": "get_jenkins_build_info",
+        "kind": "read",
+        "model_sees": "job_url, build_number",
+        "python_does": "GET concrete build api/json and returns result/building/duration metadata",
+    },
+    {
         "name": "get_jenkins_job_config",
         "kind": "read",
         "model_sees": "job_url?",
@@ -481,6 +594,8 @@ JENKINS_TOOL_NOTES = [
 JENKINS_TOOLS = [
     get_jenkins_job_info,
     trigger_jenkins_job,
+    get_jenkins_queue_item,
+    get_jenkins_build_info,
     get_jenkins_job_config,
     copy_jenkins_job,
     create_jenkins_job_from_config,
