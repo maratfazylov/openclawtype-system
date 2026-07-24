@@ -14,7 +14,7 @@ WHY A SEPARATE SCRIPT?
 HOW IT WORKS
     1. Calls VK API ``messages.getConversations(filter=unread)``
     2. Skips already-seen messages (tracked in a local JSON state file)
-    3. Calls ``trigger_langgraph_run()`` which creates a LangGraph thread and run
+    3. Maps ``peer_id`` to a stable LangGraph thread and calls ``trigger_langgraph_run()``
     4. Optionally waits for the agent output and sends it back to VK
     5. Repeats every poll interval (default 5 seconds)
 
@@ -94,8 +94,13 @@ def _bool_env(name: str, default: bool = False) -> bool:
 
 def _load_state(path: Path) -> dict[str, Any]:
     if not path.exists():
-        return {"seen_message_ids": []}
-    return json.loads(path.read_text())
+        return {"seen_message_ids": [], "threads_by_peer": {}}
+    state = json.loads(path.read_text())
+    state.setdefault("seen_message_ids", [])
+    state.setdefault("threads_by_peer", {})
+    if not isinstance(state["threads_by_peer"], dict):
+        state["threads_by_peer"] = {}
+    return state
 
 
 def _save_state(path: Path, state: dict[str, Any]) -> None:
@@ -134,9 +139,14 @@ def _extract_agent_text(output: Any) -> str:
     return json.dumps(output, ensure_ascii=False, default=str)
 
 
+def _thread_key(peer_id: str) -> str:
+    return f"vk:{peer_id}"
+
+
 def process_once(state_path: Path) -> int:
     state = _load_state(state_path)
     seen = set(state.get("seen_message_ids", []))
+    threads_by_peer = state.get("threads_by_peer", {})
     count = int(_env("VK_BRIDGE_CONVERSATION_COUNT", "10") or "10")
     dry_run = _bool_env("VK_BRIDGE_DRY_RUN", True)
     reply_to_vk = _bool_env("VK_BRIDGE_REPLY_TO_VK", False)
@@ -155,6 +165,8 @@ def process_once(state_path: Path) -> int:
         if message_id in seen:
             continue
 
+        thread_key = _thread_key(peer_id)
+        thread_id = threads_by_peer.get(thread_key)
         result = trigger_langgraph_run(
             text,
             source="vk",
@@ -162,14 +174,19 @@ def process_once(state_path: Path) -> int:
                 "peer_id": peer_id,
                 "vk_message_id": message_id,
                 "from_id": message.get("from_id"),
+                "thread_key": thread_key,
             },
+            thread_id=thread_id,
             wait=wait,
             dry_run=dry_run,
         )
         print(result)
 
+        payload = json.loads(result)
+        if not dry_run and payload.get("thread_id"):
+            threads_by_peer[thread_key] = payload["thread_id"]
+
         if reply_to_vk and not dry_run:
-            payload = json.loads(result)
             reply = _extract_agent_text(payload.get("output"))
             print(
                 send_vk_message.invoke(
@@ -188,6 +205,7 @@ def process_once(state_path: Path) -> int:
         processed += 1
 
     state["seen_message_ids"] = sorted(seen)[-500:]
+    state["threads_by_peer"] = dict(sorted(threads_by_peer.items()))
     _save_state(state_path, state)
     return processed
 

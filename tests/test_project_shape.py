@@ -9,6 +9,7 @@ from agents.model_config import (
     omniroute_enabled,
 )
 from connectors.demo import get_demo_issue, list_demo_issues
+import connectors.langgraph_bridge as langgraph_bridge
 from connectors.jenkins import (
     JENKINS_TOOL_NOTES,
     JENKINS_TOOLS,
@@ -24,6 +25,38 @@ from connectors.vk import (
     send_vk_message,
     trigger_langgraph_from_vk_message,
 )
+from scripts.vk_langgraph_bridge import _load_state, _thread_key
+
+
+class _FakeAssistants:
+    def search(self, graph_id: str):
+        return [{"assistant_id": f"{graph_id}-uuid"}]
+
+
+class _FakeThreads:
+    def __init__(self):
+        self.created = []
+
+    def create(self, metadata):
+        self.created.append(metadata)
+        return {"thread_id": f"created-{len(self.created)}"}
+
+
+class _FakeRuns:
+    def __init__(self):
+        self.wait_calls = []
+
+    def wait(self, thread_id, assistant_uuid, *, input, multitask_strategy, on_run_created):
+        self.wait_calls.append((thread_id, assistant_uuid, input, multitask_strategy))
+        on_run_created({"run_id": f"run-{thread_id}"})
+        return {"messages": [{"content": f"reply on {thread_id}"}]}
+
+
+class _FakeLangGraphClient:
+    def __init__(self):
+        self.assistants = _FakeAssistants()
+        self.threads = _FakeThreads()
+        self.runs = _FakeRuns()
 
 
 def test_langgraph_config_exposes_expected_assistants() -> None:
@@ -62,6 +95,50 @@ def test_workshop_model_config_switches_to_omniroute(monkeypatch) -> None:
 
     assert omniroute_enabled()
     assert model_label() == f"omniroute:auto ({OMNIROUTE_BASE_URL})"
+
+
+def test_langgraph_bridge_reuses_existing_thread(monkeypatch) -> None:
+    fake_client = _FakeLangGraphClient()
+    monkeypatch.setattr(langgraph_bridge, "get_sync_client", lambda url: fake_client)
+
+    result = json.loads(
+        langgraph_bridge.trigger_langgraph_run(
+            "hello",
+            source="vk",
+            metadata={"peer_id": "123"},
+            thread_id="existing-thread",
+            dry_run=False,
+        )
+    )
+
+    assert result["thread_id"] == "existing-thread"
+    assert fake_client.threads.created == []
+    assert fake_client.runs.wait_calls[0][0] == "existing-thread"
+
+
+def test_langgraph_bridge_creates_thread_when_missing(monkeypatch) -> None:
+    fake_client = _FakeLangGraphClient()
+    monkeypatch.setattr(langgraph_bridge, "get_sync_client", lambda url: fake_client)
+
+    result = json.loads(
+        langgraph_bridge.trigger_langgraph_run(
+            "hello",
+            source="vk",
+            metadata={"peer_id": "123"},
+            dry_run=False,
+        )
+    )
+
+    assert result["thread_id"] == "created-1"
+    assert fake_client.threads.created == [{"source": "vk", "peer_id": "123"}]
+    assert fake_client.runs.wait_calls[0][0] == "created-1"
+
+
+def test_vk_bridge_state_has_thread_mapping(tmp_path) -> None:
+    state_path = tmp_path / "state.json"
+
+    assert _load_state(state_path) == {"seen_message_ids": [], "threads_by_peer": {}}
+    assert _thread_key("392120166") == "vk:392120166"
 
 
 def test_workshop_notebooks_are_present_and_valid() -> None:

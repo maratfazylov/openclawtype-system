@@ -69,6 +69,7 @@ def trigger_langgraph_run(
     *,
     source: str,
     metadata: dict[str, Any] | None = None,
+    thread_id: str | None = None,
     assistant: str | None = None,
     url: str | None = None,
     wait: bool = True,
@@ -83,6 +84,7 @@ def trigger_langgraph_run(
         "langgraph_url": resolved_url,
         "assistant_id": resolved_assistant,
         "input": agent_input,
+        "thread_id": thread_id,
         "wait": wait,
     }
 
@@ -91,41 +93,64 @@ def trigger_langgraph_run(
 
     client = get_sync_client(url=resolved_url)
     assistant_uuid = _resolve_assistant_uuid(client, resolved_assistant)
-    thread = client.threads.create(
-        metadata={
-            "source": source,
-            **(metadata or {}),
-        }
-    )
+
+    def _create_thread() -> str:
+        thread = client.threads.create(
+            metadata={
+                "source": source,
+                **(metadata or {}),
+            }
+        )
+        return thread["thread_id"]
+
+    resolved_thread_id = thread_id or _create_thread()
 
     result: dict[str, Any] = {
         "ok": True,
         **preview,
-        "thread_id": thread["thread_id"],
+        "thread_id": resolved_thread_id,
     }
 
-    if wait:
-        run_meta: dict[str, str] = {}
+    def _run(target_thread_id: str) -> tuple[Any, str]:
+        if wait:
+            run_meta: dict[str, str] = {}
 
-        def _capture(meta):
-            run_meta["run_id"] = meta["run_id"]
+            def _capture(meta):
+                run_meta["run_id"] = meta["run_id"]
 
-        result["output"] = client.runs.wait(
-            thread["thread_id"],
-            assistant_uuid,
-            input=agent_input,
-            multitask_strategy="enqueue",
-            on_run_created=_capture,
-        )
-        result["run_id"] = run_meta.get("run_id", "")
-    else:
+            output = client.runs.wait(
+                target_thread_id,
+                assistant_uuid,
+                input=agent_input,
+                multitask_strategy="enqueue",
+                on_run_created=_capture,
+            )
+            return output, run_meta.get("run_id", "")
+
         run = client.runs.create(
-            thread["thread_id"],
+            target_thread_id,
             assistant_uuid,
             input=agent_input,
             stream_mode="values",
             multitask_strategy="enqueue",
         )
-        result["run_id"] = run["run_id"]
+        return None, run["run_id"]
+
+    try:
+        output, run_id = _run(resolved_thread_id)
+    except Exception as exc:
+        stale_thread = thread_id is not None and (
+            "404" in str(exc) or "not found" in str(exc).lower()
+        )
+        if not stale_thread:
+            raise
+        resolved_thread_id = _create_thread()
+        result["thread_id"] = resolved_thread_id
+        result["recreated_thread"] = True
+        output, run_id = _run(resolved_thread_id)
+
+    if wait:
+        result["output"] = output
+    result["run_id"] = run_id
 
     return _json(result)
