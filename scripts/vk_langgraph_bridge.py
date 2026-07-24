@@ -181,7 +181,10 @@ def process_once(state_path: Path) -> int:
                 )
             )
 
-        seen.add(message_id)
+        if dry_run:
+            print(f"dry_run: message {message_id} was not marked as seen")
+        else:
+            seen.add(message_id)
         processed += 1
 
     state["seen_message_ids"] = sorted(seen)[-500:]
