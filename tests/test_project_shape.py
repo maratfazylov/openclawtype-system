@@ -3,9 +3,14 @@ import json
 from pathlib import Path
 
 from connectors.demo import get_demo_issue, list_demo_issues
-from connectors.jenkins import JENKINS_TOOLS, copy_jenkins_job, trigger_jenkins_job
+from connectors.jenkins import (
+    JENKINS_TOOL_NOTES,
+    JENKINS_TOOLS,
+    copy_jenkins_job,
+    trigger_jenkins_job,
+)
 from connectors.telegram import send_telegram_message
-from connectors.vk import send_vk_message, trigger_langgraph_from_vk_message
+from connectors.vk import VK_BRIDGE_HELPER_NOTES, VK_TOOL_NOTES, send_vk_message, trigger_langgraph_from_vk_message
 
 
 def test_langgraph_config_exposes_expected_assistants() -> None:
@@ -101,6 +106,9 @@ def test_jenkins_tools_include_job_management_tools() -> None:
     assert "copy_jenkins_job" in tool_names
     assert "create_jenkins_job_from_config" in tool_names
 
+    note_names = {note["name"] for note in JENKINS_TOOL_NOTES}
+    assert tool_names == note_names
+
 
 def test_jenkins_copy_job_dry_run_builds_copy_request() -> None:
     result = copy_jenkins_job.invoke(
@@ -136,6 +144,13 @@ def test_vk_connector_dry_run_masks_access_token(monkeypatch) -> None:
     assert "OpenClaw VK connector is configured." in result
     assert "vk1....alue" in result
     assert token not in result
+
+
+def test_vk_tool_notes_match_runtime_tool_surface() -> None:
+    note_names = {note["name"] for note in VK_TOOL_NOTES}
+
+    assert note_names == {"get_vk_current_user", "send_vk_message"}
+    assert VK_BRIDGE_HELPER_NOTES[0]["name"] == "trigger_langgraph_from_vk_message"
 
 
 def test_vk_connector_can_preview_langgraph_trigger() -> None:

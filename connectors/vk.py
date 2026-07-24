@@ -67,6 +67,10 @@ def _preview_payload(payload: dict[str, Any]) -> dict[str, Any]:
     return preview
 
 
+# Low-level helper tool.
+# This stays importable for diagnostics, but it is intentionally not included in
+# VK_TOOLS because a broad "call any VK method" capability is too wide for the
+# stage-04 agent surface.
 @tool
 def call_vk_api_method(
     method: str,
@@ -106,6 +110,9 @@ def call_vk_api_method(
     return _json({"ok": True, **preview, "response": data})
 
 
+# Tool 1: read-only token/profile check.
+# Model boundary: a simple "who am I connected as?" capability.
+# Python boundary: this function calls VK users.get and masks token details.
 @tool
 def get_vk_current_user(dry_run: bool = False) -> str:
     """Read the VK profile visible to the configured access token."""
@@ -118,6 +125,10 @@ def get_vk_current_user(dry_run: bool = False) -> str:
     )
 
 
+# Tool 2: outbound messenger action.
+# Model boundary: the model chooses peer_id/message/random_id/dry_run.
+# Python boundary: this function builds the VK messages.send payload, injects
+# access_token/API version, and returns structured API output or dry-run preview.
 @tool
 def send_vk_message(
     peer_id: str,
@@ -147,6 +158,10 @@ def send_vk_message(
     )
 
 
+# Bridge helper, not an agent runtime tool.
+# It models the inbound channel direction for tests and manual dry-runs:
+# VK event -> LangGraph run. The actual polling worker lives in
+# scripts/vk_langgraph_bridge.py, outside the graph.
 @tool
 def trigger_langgraph_from_vk_message(
     peer_id: str,
@@ -181,6 +196,30 @@ def trigger_langgraph_from_vk_message(
         dry_run=dry_run,
     )
 
+
+VK_TOOL_NOTES = [
+    {
+        "name": "get_vk_current_user",
+        "kind": "read",
+        "model_sees": "dry_run",
+        "python_does": "calls users.get with VK_ACCESS_TOKEN and returns profile metadata",
+    },
+    {
+        "name": "send_vk_message",
+        "kind": "write",
+        "model_sees": "peer_id, message, random_id?, dry_run",
+        "python_does": "calls messages.send with token, API version, and idempotent random_id",
+    },
+]
+
+VK_BRIDGE_HELPER_NOTES = [
+    {
+        "name": "trigger_langgraph_from_vk_message",
+        "kind": "test helper",
+        "model_sees": "not exposed in VK_TOOLS",
+        "python_does": "previews or starts VK -> LangGraph run for bridge diagnostics",
+    }
+]
 
 # Runtime tools exposed to the agent. Inbound bridge helpers stay importable for
 # tests and channel workers, but the agent should not recursively start another

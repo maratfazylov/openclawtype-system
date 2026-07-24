@@ -138,6 +138,10 @@ def _require_auth() -> tuple[bool, str | None]:
     return False, "JENKINS_USERNAME/JENKINS_API_TOKEN are required for this Jenkins action."
 
 
+# Tool 1: read-only metadata.
+# Model boundary: the model asks for Jenkins state in plain parameters.
+# Python boundary: this function owns auth, URL shape, Jenkins tree selection,
+# HTTP errors, and normalized JSON output.
 @tool
 def get_jenkins_job_info(job_url: str | None = None) -> str:
     """Read metadata for the configured Jenkins job or folder."""
@@ -180,6 +184,10 @@ def get_jenkins_job_info(job_url: str | None = None) -> str:
     )
 
 
+# Tool 2: build mutation.
+# Model boundary: the model chooses parameters and whether this is dry-run.
+# Python boundary: this function selects build/buildWithParameters, attaches
+# job token/basic auth/crumbs, and returns queue metadata without leaking secrets.
 @tool
 def trigger_jenkins_job(
     job_url: str | None = None,
@@ -252,6 +260,10 @@ def trigger_jenkins_job(
     )
 
 
+# Tool 3: read config.xml.
+# Model boundary: useful when the user asks to inspect or clone a job.
+# Python boundary: this function resolves the default folder to the single
+# buildable child job and retrieves XML with Jenkins API credentials.
 @tool
 def get_jenkins_job_config(job_url: str | None = None) -> str:
     """Read config.xml for a Jenkins job.
@@ -285,6 +297,10 @@ def get_jenkins_job_config(job_url: str | None = None) -> str:
     )
 
 
+# Tool 4: copy an existing job.
+# Model boundary: "copy test01 to test02" becomes {source, destination}.
+# Python boundary: this function calls createItem?mode=copy and handles crumb,
+# folder URL, full Jenkins job name, and dry-run preview.
 @tool
 def copy_jenkins_job(
     new_job_name: str,
@@ -361,6 +377,10 @@ def copy_jenkins_job(
     )
 
 
+# Tool 5: create a job from raw config.xml.
+# Model boundary: advanced write capability when XML already exists.
+# Python boundary: this function posts XML with the correct content type and
+# keeps credentials inside the connector.
 @tool
 def create_jenkins_job_from_config(
     new_job_name: str,
@@ -424,6 +444,39 @@ def create_jenkins_job_from_config(
         }
     )
 
+
+JENKINS_TOOL_NOTES = [
+    {
+        "name": "get_jenkins_job_info",
+        "kind": "read",
+        "model_sees": "job_url?",
+        "python_does": "GET job/folder api/json with auth and returns normalized build metadata",
+    },
+    {
+        "name": "trigger_jenkins_job",
+        "kind": "write",
+        "model_sees": "job_url?, parameters?, dry_run",
+        "python_does": "POST build/buildWithParameters with token/basic auth/crumbs",
+    },
+    {
+        "name": "get_jenkins_job_config",
+        "kind": "read",
+        "model_sees": "job_url?",
+        "python_does": "GET config.xml for a job, resolving the default folder when needed",
+    },
+    {
+        "name": "copy_jenkins_job",
+        "kind": "write",
+        "model_sees": "new_job_name, source_job_url?, folder_url?, dry_run",
+        "python_does": "POST createItem mode=copy inside the Jenkins folder",
+    },
+    {
+        "name": "create_jenkins_job_from_config",
+        "kind": "write",
+        "model_sees": "new_job_name, config_xml, folder_url?, dry_run",
+        "python_does": "POST createItem with application/xml payload",
+    },
+]
 
 JENKINS_TOOLS = [
     get_jenkins_job_info,
